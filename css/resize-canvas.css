@@ -378,3 +378,113 @@ body.tablet-mode #resizeCanvasOverlay .resize-actions .ghost-button {
   font-size: 13px;
   border-radius: 10px;
 }
+
+@media (max-width: 767px) {
+  body #resizeCanvasOverlay .resize-overlay-dialog {
+    width: min(94vw, 520px);
+    max-height: calc(100vh - 24px);
+    margin: 12px auto;
+  }
+
+  body #resizeCanvasOverlay .resize-overlay-body {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  body #resizeCanvasOverlay .resize-mode-toggle {
+    max-width: 220px;
+  }
+
+  body #resizeCanvasOverlay .resize-stage {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    align-items: stretch;
+  }
+
+  body #resizeCanvasOverlay .resize-preview-block {
+    width: min(62vw, 240px);
+    height: min(62vw, 240px);
+    min-height: 0;
+    max-height: none;
+    aspect-ratio: 1 / 1;
+    align-self: center;
+    order: 1;
+  }
+
+  body #resizeCanvasOverlay .resize-edge-card {
+    max-width: none;
+    width: 100%;
+    padding: 8px 10px;
+    gap: 6px;
+    text-align: left;
+  }
+
+  body #resizeCanvasOverlay .resize-edge-card--top {
+    order: 2;
+  }
+
+  body #resizeCanvasOverlay .resize-edge-card--left {
+    order: 3;
+  }
+
+  body #resizeCanvasOverlay .resize-edge-card--right {
+    order: 4;
+  }
+
+  body #resizeCanvasOverlay .resize-edge-card--bottom {
+    order: 5;
+  }
+
+  body #resizeCanvasOverlay .resize-edge-card::before {
+    font-size: 12px;
+    font-weight: 600;
+    color: #5f6368;
+  }
+
+  body #resizeCanvasOverlay .resize-edge-card--top::before {
+    content: '上边';
+  }
+
+  body #resizeCanvasOverlay .resize-edge-card--left::before {
+    content: '左边';
+  }
+
+  body #resizeCanvasOverlay .resize-edge-card--right::before {
+    content: '右边';
+  }
+
+  body #resizeCanvasOverlay .resize-edge-card--bottom::before {
+    content: '下边';
+  }
+
+  body #resizeCanvasOverlay .resize-edit-btn,
+  body #resizeCanvasOverlay .resize-step-btn,
+  body #resizeCanvasOverlay .resize-edit-value {
+    display: none;
+  }
+
+  body #resizeCanvasOverlay .resize-edge-control {
+    grid-template-columns: 1fr;
+  }
+
+  body #resizeCanvasOverlay .resize-value-input {
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  body #resizeCanvasOverlay .resize-preview {
+    padding: 6px;
+  }
+
+  body #resizeCanvasOverlay .resize-info {
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  body #resizeCanvasOverlay .resize-info-item {
+    min-width: 0;
+  }
+}

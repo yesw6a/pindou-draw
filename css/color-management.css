@@ -467,6 +467,119 @@ body.tablet-mode #canvasHighlightWindow .highlight-message {
   font-size: 12px;
 }
 
+@media (max-width: 767px) {
+  #canvasHighlightWindow .modal-window__dialog {
+    width: min(94vw, 520px);
+    max-height: calc(100vh - 40px);
+  }
+
+  #canvasHighlightWindow .modal-window__body {
+    gap: 12px;
+    max-height: calc(100vh - 140px);
+  }
+
+  #canvasHighlightWindow .highlight-window {
+    gap: 12px;
+  }
+
+  #canvasHighlightWindow .highlight-window__toolbar {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #canvasHighlightWindow .highlight-window__actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  #canvasHighlightWindow #canvasHighlightReplaceBtn {
+    grid-column: 1 / -1;
+  }
+
+  #canvasHighlightWindow .highlight-window__search {
+    width: 100%;
+    flex: inherit !important;
+  }
+
+  #canvasHighlightWindow .highlight-window__content {
+    flex: 1;
+    min-height: 0;
+    padding: 12px;
+  }
+
+  #canvasHighlightWindow .highlight-window__grid {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    align-items: inherit !important; 
+  }
+
+  #canvasHighlightWindow .highlight-list {
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+  }
+
+  #canvasHighlightWindow .highlight-list-content {
+    max-height: none;
+    overflow-y: auto;
+  }
+
+  #canvasHighlightWindow .highlight-window__hint {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  #canvasHighlightWindow .highlight-window__replacement-panel {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: none;
+    z-index: 5;
+  }
+
+  #canvasHighlightWindow .highlight-window__replacement-panel.is-visible {
+    display: flex;
+  }
+
+  #canvasHighlightWindow .highlight-window__replacement-list {
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+  }
+
+  #canvasHighlightWindow .highlight-window__replacement-actions {
+    margin-top: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  #colorManageWindow .modal-window__footer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: flex-end;
+    margin: 10px 16px 14px;
+  }
+
+  #colorManageWindow .modal-window__footer .ghost-button,
+  #colorManageWindow .modal-window__footer .primary-button {
+    flex: 1 1 0;
+  }
+
+  .modal-window--wide .modal-window__dialog {
+    max-height: calc(100vh - 150px);
+  }
+}
+
 
 .highlight-list-content .highlight-color-item {
 	display: grid;

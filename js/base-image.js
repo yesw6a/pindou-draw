@@ -168,6 +168,10 @@ function updateBaseScaleControls() {
     elements.baseScaleRange.value = String(clamped);
     elements.baseScaleRange.disabled = !state.baseImage;
   }
+  if (elements.baseEditScaleRange) {
+    elements.baseEditScaleRange.value = String(clamped);
+    elements.baseEditScaleRange.disabled = !state.baseImage;
+  }
   if (elements.baseScaleInput) {
     elements.baseScaleInput.value = formatBaseScaleValue(clamped);
     elements.baseScaleInput.disabled = !state.baseImage;
@@ -176,6 +180,10 @@ function updateBaseScaleControls() {
     const percent = Math.round(clamped * 100) || 100;
     elements.baseScaleValue.textContent = `${percent}%`;
   }
+  if (elements.baseEditScaleValue) {
+    const percent = Math.round(clamped * 100) || 100;
+    elements.baseEditScaleValue.textContent = `${percent}%`;
+  }
 }
 export function updateCanvasCursorState() {
   if (!elements.canvas) return;
@@ -183,6 +191,13 @@ export function updateCanvasCursorState() {
   elements.canvas.classList.toggle('bucket-tool', state.currentTool === 'bucket' && !state.baseEditing);
   elements.canvas.classList.toggle('eyedropper-tool', state.currentTool === 'eyedropper' && !state.baseEditing);
   !state.baseEditing && elements.canvas.classList.remove('is-base-dragging');
+  document.body.classList.toggle('base-editing', state.baseEditing);
+  if (elements.baseEditExitBtn) {
+    elements.baseEditExitBtn.setAttribute('aria-hidden', state.baseEditing ? 'false' : 'true');
+  }
+  if (elements.baseEditScaleControl) {
+    elements.baseEditScaleControl.setAttribute('aria-hidden', state.baseEditing ? 'false' : 'true');
+  }
 }
 export function syncBaseControlsAvailability() {
   const hasBase = Boolean(state.baseImage);[elements.baseLayerSelect, elements.toggleBaseEditBtn, elements.baseScaleRange].forEach(el => el && (el.disabled = !hasBase));

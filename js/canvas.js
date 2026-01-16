@@ -548,8 +548,9 @@ export function prepareCanvasInteractions() {
       elements.canvas?.setPointerCapture?.(pointerId);
     } catch (_) { }
   };
-  const isTabletTouchPointer = (ev) => state.isTabletMode && ev.pointerType === 'touch';
+  const isTabletTouchPointer = (ev) => (state.isTabletMode || isMobileViewport()) && ev.pointerType === 'touch';
   const isTabletDirectPointer = (ev) => state.isTabletMode && (ev.pointerType === 'touch' || ev.pointerType === 'pen');
+  const isMobileDirectPointer = (ev) => isMobileViewport() && (ev.pointerType === 'touch' || ev.pointerType === 'pen');
   const recordTabletPointer = (ev) => {
     if (!isTabletTouchPointer(ev)) return;
     tabletGestureState.pointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
@@ -642,8 +643,25 @@ export function prepareCanvasInteractions() {
         return;
       }
     }
-    const isTabletDirect = isTabletDirectPointer(ev);
-    if (state.moveModeEnabled && state.isTabletMode && isTabletDirect) {
+    const isDirectPointer = isTabletDirectPointer(ev) || isMobileDirectPointer(ev);
+    if (state.moveModeEnabled && isMobileViewport()) {
+      const baseMove = state.baseEditing && state.baseImage;
+      pointerState = {
+        type: baseMove ? 'baseMove' : 'pan',
+        pointerId: ev.pointerId,
+        startX: ev.clientX,
+        startY: ev.clientY,
+        originOffsetX: state.baseOffsetX,
+        originOffsetY: state.baseOffsetY,
+        originPanX: state.panX,
+        originPanY: state.panY
+      };
+      trySetPointerCapture(ev.pointerId);
+      if (baseMove) elements.canvas.classList.add('is-base-dragging');
+      else elements.canvas.classList.add('is-panning');
+      return;
+    }
+    if (state.moveModeEnabled && (state.isTabletMode || isMobileViewport()) && isDirectPointer) {
       pointerState = {
         type: 'pending',
         pointerId: ev.pointerId,
@@ -786,9 +804,9 @@ export function prepareCanvasInteractions() {
   elements.canvas.addEventListener('pointercancel', releasePointer);
 }
 function handleSelectionPointerDown(ev) {
-  if (state.isTabletMode && state.moveModeEnabled) return false;
+  if ((state.isTabletMode || isMobileViewport()) && state.moveModeEnabled) return false;
   const coords = getCanvasCoordinates(ev);
-  const isTabletSelection = state.isTabletMode && (ev.pointerType === 'touch' || ev.pointerType === 'pen');
+  const isTabletSelection = (state.isTabletMode || isMobileViewport()) && (ev.pointerType === 'touch' || ev.pointerType === 'pen');
   if (isTabletSelection) {
     if (!coords) return true;
     if (state.selectionToolMode === 'add') {
@@ -964,7 +982,7 @@ function paintAtPointer(ev, button) {
   const x = Math.floor(localX / state.cellSize), y = Math.floor(localY / state.cellSize);
   if (!Number.isInteger(x) || !Number.isInteger(y) || x < 0 || y < 0 || x >= state.width || y >= state.height) return;
   if (!isCellEditable(x, y)) return;
-  const effectiveButton = state.isTabletMode && state.tabletEraserActive && (state.currentTool === 'pencil' || state.currentTool === 'bucket')
+  const effectiveButton = (state.isTabletMode || isMobileViewport()) && state.tabletEraserActive && (state.currentTool === 'pencil' || state.currentTool === 'bucket')
     ? 2
     : button;
   if (state.currentTool === 'eyedropper' && effectiveButton === 0) {
@@ -1027,6 +1045,11 @@ function paintAtPointer(ev, button) {
   function isCellEditable(cellX, cellY) {
     return !state.selection.active || isCellSelected(cellX, cellY);
   }
+}
+
+function isMobileViewport() {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false;
+  return window.matchMedia('(max-width: 767px)').matches;
 }
 function bucketFill(x, y, newCell) {
   if (state.selection.active && !isCellSelected(x, y)) return;

@@ -115,7 +115,11 @@ function initializePhotoSketchViewState(options = {}) {
   const overlay = elements.photoSketchOverlay;
   if (!overlay && !options.allowNoOverlay) return;
 
-  if (state.isTabletMode) {
+  const isMobile = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+    ? window.matchMedia('(max-width: 767px)').matches
+    : false;
+
+  if (state.isTabletMode || isMobile) {
     overlay.dataset.photoSketchView = overlay.dataset.photoSketchView || 'params';
   } else {
     delete overlay.dataset.photoSketchView;
@@ -127,7 +131,11 @@ function initializePhotoSketchViewState(options = {}) {
 
 function setPhotoSketchMainView(view) {
   const overlay = elements.photoSketchOverlay;
-  if (!overlay || !state.isTabletMode) return;
+  if (!overlay) return;
+  const isMobile = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+    ? window.matchMedia('(max-width: 767px)').matches
+    : false;
+  if (!state.isTabletMode && !isMobile) return;
   overlay.dataset.photoSketchView = view === 'preview' ? 'preview' : 'params';
   updatePhotoSketchTabsUI();
 }
@@ -148,7 +156,11 @@ function updatePhotoSketchTabsUI() {
   const previewOriginalBtn = document.getElementById('photoSketchPreviewTabOriginal');
   const previewPixelBtn = document.getElementById('photoSketchPreviewTabPixel');
 
-  if (state.isTabletMode) {
+  const isMobile = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+    ? window.matchMedia('(max-width: 767px)').matches
+    : false;
+
+  if (state.isTabletMode || isMobile) {
     const view = overlay.dataset.photoSketchView === 'preview' ? 'preview' : 'params';
     mainParamsBtn?.setAttribute('aria-selected', view === 'params' ? 'true' : 'false');
     mainPreviewBtn?.setAttribute('aria-selected', view === 'preview' ? 'true' : 'false');
@@ -236,6 +248,14 @@ function handleCropLockToggle(event) {
   const enabled = Boolean(event?.target?.checked);
   photoSketchState.cropLockEnabled = enabled;
   if (enabled) {
+    const widthInput = elements.photoSketchCropWidth;
+    const heightInput = elements.photoSketchCropHeight;
+    const widthValue = Number(widthInput?.value) || 0;
+    const heightValue = Number(heightInput?.value) || 0;
+    if (widthInput && heightInput && widthValue <= 0 && heightValue <= 0 && photoSketchState.image) {
+      widthInput.value = String(photoSketchState.image.naturalWidth);
+      heightInput.value = String(photoSketchState.image.naturalHeight);
+    }
     photoSketchState.cropAspectRatio = getCurrentCropRatio() || photoSketchState.cropAspectRatio || 1;
     enforceCropLock(photoSketchState.cropLastEdited);
   }
@@ -558,6 +578,9 @@ function getCurrentCropRatio() {
   const heightValue = Number(elements.photoSketchCropHeight?.value) || 0;
   if (widthValue > 0 && heightValue > 0) {
     return widthValue / heightValue;
+  }
+  if (photoSketchState.image?.naturalHeight > 0) {
+    return photoSketchState.image.naturalWidth / photoSketchState.image.naturalHeight;
   }
   const config = computeSketchConfig();
   if (config && config.width > 0 && config.height > 0) {
@@ -893,6 +916,9 @@ function applySketchToCanvas() {
   saveHistory();
   updateSketchStatus(`已创建 ${width} × ${height} 草图并应用到画布。`, 'success');
   closePhotoSketchOverlay();
+  try {
+    document.dispatchEvent(new CustomEvent('mobile:reset-subtools'));
+  } catch (_) { }
 }
 
 function exportSketchImage() {

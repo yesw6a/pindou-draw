@@ -19,6 +19,11 @@ let autosaveStatus = 'countdown';
 let autosaveCountdownEnabled = true;
 let autosaveForceUntil = 0;
 
+function isMobileLayout() {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false;
+  return window.matchMedia('(max-width: 767px)').matches;
+}
+
 function resolveAssetUrl(path) {
   try {
     return new URL(path, document.baseURI).href;
@@ -286,16 +291,52 @@ function closeLocalStorageWindow() {
   if (!win) return;
   win.classList.remove('is-active');
   win.setAttribute('aria-hidden', 'true');
+  if (isMobileLayout()) {
+    try {
+      document.dispatchEvent(new CustomEvent('mobile:close-panels'));
+    } catch (_) { }
+    document.body.classList.remove('mobile-subtool-open');
+    document.body.classList.add('mobile-menu-open');
+    elements.mobileMenuOverlay?.setAttribute('aria-hidden', 'false');
+  }
 }
 
 function updateAutosaveCountdownText() {
   const toast = elements.autoSaveToast;
   if (!toast || autosaveStatus !== 'countdown' || !autosaveCountdownEnabled) return;
   const remaining = Math.max(0, nextAutosaveAt - Date.now());
+  if (isMobileLayout()) {
+    updateAutosaveProgressBar(remaining);
+    toast.classList.remove('is-visible', 'is-loading');
+    toast.setAttribute('aria-hidden', 'true');
+    toast.style.opacity = '';
+    toast.style.transform = '';
+    return;
+  }
   toast.textContent = `自动保存：下次保存 ${formatCountdown(remaining)}`;
   toast.classList.remove('is-loading');
   toast.classList.add('is-visible');
   toast.setAttribute('aria-hidden', 'false');
+}
+
+function updateAutosaveProgressBar(remainingMs) {
+  const bar = elements.autosaveProgress;
+  const fill = elements.autosaveProgressFill;
+  if (!bar || !fill) return;
+  const elapsed = Math.max(0, AUTOSAVE_INTERVAL_MS - remainingMs);
+  const ratio = Math.max(0, Math.min(1, elapsed / AUTOSAVE_INTERVAL_MS));
+  fill.style.width = `${Math.round(ratio * 100)}%`;
+  bar.classList.add('is-visible');
+  bar.setAttribute('aria-hidden', 'false');
+}
+
+function hideAutosaveProgressBar() {
+  const bar = elements.autosaveProgress;
+  const fill = elements.autosaveProgressFill;
+  if (!bar || !fill) return;
+  bar.classList.remove('is-visible');
+  bar.setAttribute('aria-hidden', 'true');
+  fill.style.width = '';
 }
 
 function showAutoSaveToast(message, options = {}) {
@@ -305,12 +346,16 @@ function showAutoSaveToast(message, options = {}) {
   autosaveStatus = options.status ?? 'status';
   const duration = options.durationMs ?? 2000;
   autosaveForceUntil = Date.now() + duration;
+  if (isMobileLayout()) {
+    hideAutosaveProgressBar();
+  }
   toast.textContent = message;
   toast.classList.toggle('is-loading', Boolean(options.loading));
   toast.classList.add('is-visible');
   toast.setAttribute('aria-hidden', 'false');
   toast.style.opacity = '1';
   toast.style.transform = 'translateY(0)';
+  toast.style.display = 'block';
   if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
     window.requestAnimationFrame(() => {
       toast.classList.add('is-visible');
@@ -504,7 +549,14 @@ function loadFromSlot(index) {
 
   applyPaletteFromSlot(slot);
   const ok = applyCanvasFromSlot(slot);
-  if (ok) closeLocalStorageWindow();
+  if (ok) {
+    closeLocalStorageWindow();
+    if (isMobileLayout()) {
+      try {
+        document.dispatchEvent(new CustomEvent('mobile:reset-subtools'));
+      } catch (_) { }
+    }
+  }
 }
 
 function bindSlotEvents() {
@@ -601,6 +653,8 @@ export function initializeLocalStorageFeature() {
       nextAutosaveAt = Date.now() + AUTOSAVE_INTERVAL_MS;
     }
     updateAutosaveCountdownText();
+  } else if (elements.autosaveProgress) {
+    hideAutosaveProgressBar();
   } else if (elements.autoSaveToast) {
     elements.autoSaveToast.classList.remove('is-visible', 'is-loading');
     elements.autoSaveToast.setAttribute('aria-hidden', 'true');
@@ -639,6 +693,7 @@ export function setAutosaveCountdownEnabled(enabled) {
       window.clearInterval(autosaveCountdownTimer);
       autosaveCountdownTimer = null;
     }
+    hideAutosaveProgressBar();
     if (elements.autoSaveToast && Date.now() > autosaveForceUntil) {
       elements.autoSaveToast.classList.remove('is-visible', 'is-loading');
       elements.autoSaveToast.setAttribute('aria-hidden', 'true');

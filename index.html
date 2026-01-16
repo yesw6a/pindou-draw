@@ -28,13 +28,17 @@
 
 <body>
   <div id="displayModeToast" class="display-mode-toast" role="status" aria-live="polite" aria-hidden="true"></div>
-  <div id="manualHintToast" class="manual-hint-toast" role="status" aria-live="polite" aria-hidden="true">
+  <div id="manualHintToast" class="manual-hint-toast" role="status" aria-live="polite" aria-hidden="true"
+    data-text-default="← 如果有使用上的疑问请查看此处说明书。" data-text-mobile="说明书和额外说明在此处查看→">
     ← 如果有使用上的疑问请查看此处说明书。
   </div>
   <div id="tabletUsageToast" class="tablet-usage-toast" role="status" aria-live="polite" aria-hidden="true">
     平板模式建议开启全屏模式使用
   </div>
   <div id="autoSaveToast" class="autosave-toast" aria-hidden="true"></div>
+  <div id="autosaveProgress" class="autosave-progress" aria-hidden="true">
+    <div id="autosaveProgressFill" class="autosave-progress__fill"></div>
+  </div>
   <!-- 左侧工具栏 -->
   <aside class="toolbar toolbar-left" aria-label="功能工具栏">
     <button class="toolbar-button is-active" type="button" data-role="panel" data-panel-target="canvas-settings"
@@ -61,13 +65,17 @@
       aria-controls="panel-display-settings" aria-expanded="false" data-tooltip="显示设置">
       <img src="svg/显示设置.svg" alt="">
     </button>
-    <button class="toolbar-button" type="button" data-role="panel" data-panel-target="focus-mode"
-      aria-controls="panel-focus-mode" aria-expanded="false" data-tooltip="简洁模式">
+    <button id="focusFullscreenBtn" class="toolbar-button" type="button" data-tooltip="全屏" aria-label="全屏">
       <img src="svg/放大.svg" alt="">
     </button>
     <button class="toolbar-button" type="button" data-role="panel" data-panel-target="manual"
       aria-controls="panel-manual" aria-expanded="false" data-tooltip="使用手册">
       <img src="svg/使用手册.svg" alt="">
+    </button>
+    <button id="canvasInfoBtn" class="toolbar-button is-hidden" type="button" data-role="panel"
+      data-panel-target="canvas-info" aria-controls="panel-canvas-info" aria-expanded="false" data-tooltip="画布信息"
+      tabindex="-1">
+      <img src="svg/信息.svg" alt="">
     </button>
   </aside>
 
@@ -132,6 +140,85 @@
       <img src="svg/退出.svg" alt="">
     </button>
   </aside>
+  <div id="mobileToolbarGroup" class="mobile-toolbar-group" aria-hidden="true">
+    <div id="mobileMoveSlot" class="mobile-move-slot"></div>
+    <aside id="mobileToolbar" class="toolbar-bottom mobile-toolbar" aria-label="移动端工具栏" aria-hidden="true">
+      <button id="mobileToolPencilBtn" class="toolbar-button" type="button" aria-label="画笔" data-tooltip="画笔"
+        data-role="tool" data-tool="pencil">
+        <img src="svg/画笔.svg" alt="">
+      </button>
+      <button id="mobileToolBucketBtn" class="toolbar-button" type="button" aria-label="油漆桶" data-tooltip="油漆桶"
+        data-role="tool" data-tool="bucket">
+        <img src="svg/油漆桶.svg" alt="">
+      </button>
+      <button id="mobileToolEyedropperBtn" class="toolbar-button" type="button" aria-label="吸管" data-tooltip="吸管"
+        data-role="tool" data-tool="eyedropper">
+        <img src="svg/吸管.svg" alt="">
+      </button>
+      <button id="mobileToolSelectionBtn" class="toolbar-button" type="button" aria-label="选区" data-tooltip="选区"
+        data-role="tool" data-tool="selection">
+        <img src="svg/选区.svg" alt="">
+      </button>
+      <button id="mobilePaletteWindowBtn" class="toolbar-button" type="button" aria-label="调色盘" data-tooltip="调色盘">
+        <img src="svg/调色盘.svg" alt="">
+      </button>
+      <button id="mobileMenuBtn" class="toolbar-button" type="button" aria-label="菜单" data-tooltip="菜单">
+        <img src="svg/菜单.svg" alt="">
+      </button>
+    </aside>
+  </div>
+  <div id="mobileMenuOverlay" class="mobile-menu-overlay" aria-hidden="true">
+    <div id="mobileMenuPanel" class="mobile-menu-panel" role="dialog" aria-label="菜单">
+      <button id="mobileMenuManualBtn" class="mobile-menu-button" type="button">
+        <img src="svg/使用手册.svg" alt="">
+        <span>使用说明</span>
+      </button>
+      <button id="mobileMenuCanvasBtn" class="mobile-menu-button" type="button">
+        <img src="svg/画布设置.svg" alt="">
+        <span>新建画布</span>
+      </button>
+      <button id="mobileMenuInfoBtn" class="mobile-menu-button" type="button">
+        <img src="svg/信息.svg" alt="">
+        <span>画布信息</span>
+      </button>
+      <button id="mobileMenuBaseBtn" class="mobile-menu-button" type="button">
+        <img src="svg/底图设置.svg" alt="">
+        <span>底图校准</span>
+      </button>
+      <button id="mobileMenuReferenceBtn" class="mobile-menu-button" type="button">
+        <img src="svg/参考图窗.svg" alt="">
+        <span>参考窗口</span>
+      </button>
+      <button id="mobileMenuExportBtn" class="mobile-menu-button" type="button">
+        <img src="svg/导出.svg" alt="">
+        <span>导出/保存</span>
+      </button>
+      <button id="mobileMenuImportBtn" class="mobile-menu-button" type="button">
+        <img src="svg/导入.svg" alt="">
+        <span>导入/读取</span>
+      </button>
+      <button id="mobileMenuDisplayBtn" class="mobile-menu-button" type="button">
+        <img src="svg/显示设置.svg" alt="">
+        <span>显示设置</span>
+      </button>
+      <button id="mobileMenuFullscreenBtn" class="mobile-menu-button" type="button">
+        <img src="svg/放大.svg" alt="">
+        <span>全屏</span>
+      </button>
+      <button id="mobileMenuImageOpsBtn" class="mobile-menu-button" type="button">
+        <img src="svg/图像操作.svg" alt="">
+        <span>图像操作</span>
+      </button>
+      <button id="mobileMenuPaletteManageBtn" class="mobile-menu-button" type="button">
+        <img src="svg/色卡选择.svg" alt="">
+        <span>色卡管理</span>
+      </button>
+      <button id="mobileMenuColorManageBtn" class="mobile-menu-button" type="button">
+        <img src="svg/颜色管理.svg" alt="">
+        <span>颜色管理</span>
+      </button>
+    </div>
+  </div>
   <aside id="tabletUndoRedo" class="toolbar-bottom tablet-undo-redo" aria-label="撤回与回退" aria-hidden="true">
     <button id="tabletUndoBtn" class="toolbar-button" type="button" aria-label="撤回" data-tooltip="撤回">
       <img src="svg/撤回.svg" alt="">
@@ -143,6 +230,14 @@
       <img src="svg/重做.svg" alt="">
     </button>
   </aside>
+  <button id="baseEditExitBtn" class="toolbar-button base-edit-exit-btn" type="button" aria-label="退出底图编辑"
+    data-tooltip="退出底图编辑" aria-hidden="true">
+    <img src="svg/无.svg" alt="">
+  </button>
+  <div id="baseEditScaleControl" class="base-edit-scale-control" aria-hidden="true">
+    <span id="baseEditScaleValue" class="base-edit-scale-value" aria-live="polite">100%</span>
+    <input id="baseEditScaleRange" type="range" min="0.01" max="2" step="0.01" value="1" aria-label="底图缩放微调">
+  </div>
   <div id="toolPopouts" class="tool-popouts" aria-hidden="true">
     <div id="eraserPopout" class="tool-popout" data-expansion="eraser" aria-label="橡皮展开栏">
       <button id="eraserPrimaryBtn" class="toolbar-button popout-button" type="button" aria-label="当前绘制工具"></button>
@@ -458,23 +553,6 @@
       </div>
     </section>
 
-    <!-- 简洁模式和全屏模式中转栏 -->
-    <section class="tool-panel" id="panel-focus-mode" data-panel="focus-mode">
-      <header class="tool-panel__header">
-        <h2>全屏与简洁模式</h2>
-        <button class="panel-close-button" type="button" data-panel-close="focus-mode" aria-label="关闭简洁模式">×</button>
-      </header>
-      <div class="tool-panel__body">
-        <p class="panel-description">可快速切换至全屏并预览简洁模式按钮。</p>
-        <div class="button-row focus-mode-actions"><button id="focusFullscreenBtn" type="button"
-            class="primary-button">进入全屏</button><button id="focusSimpleModeBtn" type="button"
-            class="ghost-button">进入简洁模式</button></div>
-        <div class="button-row focus-mode-mode-switch"><button id="forceTabletModeBtnPanel" type="button"
-            class="ghost-button">改为平板端操作与显示</button><button id="forceDesktopModeBtnPanel" type="button"
-            class="ghost-button" style="display: none;">改为电脑端操作与显示</button></div>
-      </div>
-    </section>
-
     <!-- 使用手册与说明书中转栏 -->
     <section class="tool-panel" id="panel-manual" data-panel="manual">
       <header class="tool-panel__header">
@@ -487,6 +565,20 @@
           <button id="updateManualBtn" type="button" class="ghost-button">更新说明</button>
           <a id="docsLink" class="primary-button" href="manual.html" target="_blank" rel="noopener">使用说明</a>
         </div>
+      </div>
+    </section>
+
+    <section class="tool-panel" id="panel-canvas-info" data-panel="canvas-info">
+      <header class="tool-panel__header">
+        <h2>画布信息</h2>
+        <button class="panel-close-button" type="button" data-panel-close="canvas-info" aria-label="关闭画布信息">×</button>
+      </header>
+      <div class="tool-panel__body">
+        <p class="panel-description">查看当前画布与底图的基础信息。</p>
+        <div class="panel-meta">创建时间：<span id="canvasInfoCreated">--</span></div>
+        <div class="panel-meta">使用色卡：<span id="canvasInfoPalette">--</span></div>
+        <div class="panel-meta">画布大小：<span id="canvasInfoSize">--</span></div>
+        <div class="panel-meta">底图状态：<span id="canvasInfoBase">--</span></div>
       </div>
     </section>
   </div>
@@ -921,6 +1013,8 @@
             aria-selected="true" data-export-view="preview">导出预览</button>
           <button id="exportTabSettings" class="ghost-button export-tab-button" type="button" role="tab"
             aria-selected="false" data-export-view="settings">导出设置</button>
+          <button id="exportTabHighlight" class="ghost-button export-tab-button" type="button" role="tab"
+            aria-selected="false" data-export-view="highlight">高亮导出</button>
         </div>
         <div class="export-layout">
           <!-- 预览部分 -->

@@ -14,6 +14,13 @@ let previewRenderHandle = null;
 let previewRenderCancel = null;
 let pendingPreviewSnapshot = null;
 let lastPreviewSignature = null;
+function isMobileLayout() {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false;
+    return window.matchMedia('(max-width: 767px)').matches;
+}
+function isCompactExportLayout() {
+    return state.isTabletMode || isMobileLayout();
+}
 export function initializeExportWindow() {
     if (!elements.exportWindow) return;
     
@@ -218,7 +225,7 @@ function handlePreviewMouseUp() {
     elements.exportPreviewCanvas.style.cursor = 'grab';
 }
 function handlePreviewTouchStart(event) {
-    if (!state.isTabletMode) {
+    if (!isCompactExportLayout()) {
         if (event.touches.length !== 1) return;
         event.preventDefault();
         previewState.isDragging = true;
@@ -252,7 +259,7 @@ function handlePreviewTouchStart(event) {
     previewState.lastY = event.touches[0].clientY;
 }
 function handlePreviewTouchMove(event) {
-    if (state.isTabletMode && previewTouchGesture.pinchActive) {
+    if (isCompactExportLayout() && previewTouchGesture.pinchActive) {
         if (event.touches.length !== 2) return;
         event.preventDefault();
         const [a, b] = event.touches;
@@ -282,7 +289,7 @@ function handlePreviewTouchMove(event) {
     renderPreviewCanvas();
 }
 function handlePreviewTouchEnd(event) {
-    if (state.isTabletMode && previewTouchGesture.pinchActive && event.touches.length < 2) {
+    if (isCompactExportLayout() && previewTouchGesture.pinchActive && event.touches.length < 2) {
         previewTouchGesture.pinchActive = false;
         if (event.touches.length === 1) {
             previewState.isDragging = true;
@@ -315,7 +322,7 @@ export function toggleExportWindow(force) {
     if (state.exportVisible === next) return;
     state.exportVisible = next;
     if (next) {
-        if (state.isTabletMode && elements.exportWindow) {
+        if (isCompactExportLayout() && elements.exportWindow) {
             elements.exportWindow.dataset.tabletExportView = 'preview';
         }
         updateExportPreview({ force: true });
@@ -328,6 +335,11 @@ export function toggleExportWindow(force) {
         resetPreviewState();
     }
     syncExportWindow();
+    if (!next && isMobileLayout() && document.body.classList.contains('mobile-subtool-open')) {
+        document.body.classList.remove('mobile-subtool-open');
+        document.body.classList.add('mobile-menu-open');
+        elements.mobileMenuOverlay?.setAttribute('aria-hidden', 'false');
+    }
 }
 function resetPreviewState() {
     if (previewRenderHandle !== null && typeof previewRenderCancel === 'function') {
@@ -637,6 +649,9 @@ function handleExportConfirm() {
         });
     }
     toggleExportWindow(false);
+    if (isMobileLayout()) {
+        document.dispatchEvent(new Event('mobile:reset-subtools'));
+    }
 }
 function updateFormatAvailability() {
     const hasHighlight = exportHighlightManager.hasHighlight();
@@ -708,16 +723,29 @@ function syncExportWindow() {
 function bindExportTabletViewTabs() {
     const previewBtn = document.getElementById('exportTabPreview');
     const settingsBtn = document.getElementById('exportTabSettings');
-    if (!previewBtn || !settingsBtn) return;
+    const highlightBtn = document.getElementById('exportTabHighlight');
+    if (!previewBtn || !settingsBtn || !highlightBtn) return;
 
     previewBtn.addEventListener('click', () => setTabletExportView('preview'));
     settingsBtn.addEventListener('click', () => setTabletExportView('settings'));
+    highlightBtn.addEventListener('click', () => setTabletExportView('highlight'));
 
     document.addEventListener('tablet:change', () => {
         if (!state.exportVisible) return;
-        if (state.isTabletMode && elements.exportWindow) {
+        if (isCompactExportLayout() && elements.exportWindow) {
             const raw = elements.exportWindow.dataset.tabletExportView;
-            if (raw !== 'preview' && raw !== 'settings') {
+            if (raw !== 'preview' && raw !== 'settings' && raw !== 'highlight') {
+                elements.exportWindow.dataset.tabletExportView = 'preview';
+            }
+        }
+        updateExportTabletViewTabsUI();
+    });
+
+    window.addEventListener('resize', () => {
+        if (!state.exportVisible) return;
+        if (isCompactExportLayout() && elements.exportWindow) {
+            const raw = elements.exportWindow.dataset.tabletExportView;
+            if (raw !== 'preview' && raw !== 'settings' && raw !== 'highlight') {
                 elements.exportWindow.dataset.tabletExportView = 'preview';
             }
         }
@@ -728,8 +756,8 @@ function bindExportTabletViewTabs() {
 }
 
 function setTabletExportView(view) {
-    if (!elements.exportWindow || !state.isTabletMode) return;
-    const normalized = view === 'settings' ? 'settings' : 'preview';
+    if (!elements.exportWindow || !isCompactExportLayout()) return;
+    const normalized = view === 'settings' || view === 'highlight' ? view : 'preview';
     elements.exportWindow.dataset.tabletExportView = normalized;
     updateExportTabletViewTabsUI();
 }
@@ -737,17 +765,21 @@ function setTabletExportView(view) {
 function updateExportTabletViewTabsUI() {
     const previewBtn = document.getElementById('exportTabPreview');
     const settingsBtn = document.getElementById('exportTabSettings');
-    if (!previewBtn || !settingsBtn || !elements.exportWindow) return;
+    const highlightBtn = document.getElementById('exportTabHighlight');
+    if (!previewBtn || !settingsBtn || !highlightBtn || !elements.exportWindow) return;
 
-    if (!state.isTabletMode) {
+    if (!isCompactExportLayout()) {
         previewBtn.setAttribute('aria-selected', 'false');
         settingsBtn.setAttribute('aria-selected', 'false');
+        highlightBtn.setAttribute('aria-selected', 'false');
         return;
     }
 
-    const view = elements.exportWindow.dataset.tabletExportView === 'settings' ? 'settings' : 'preview';
+    const rawView = elements.exportWindow.dataset.tabletExportView;
+    const view = rawView === 'settings' || rawView === 'highlight' ? rawView : 'preview';
     previewBtn.setAttribute('aria-selected', view === 'preview' ? 'true' : 'false');
     settingsBtn.setAttribute('aria-selected', view === 'settings' ? 'true' : 'false');
+    highlightBtn.setAttribute('aria-selected', view === 'highlight' ? 'true' : 'false');
 
     if (view === 'preview') {
         const raf = typeof requestAnimationFrame === 'function' ? requestAnimationFrame : (fn) => setTimeout(fn, 0);

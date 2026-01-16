@@ -107,6 +107,20 @@
   transform: translateX(0);
 }
 
+@media (max-width: 767px) {
+  .manual-hint-toast {
+    max-width: min(220px, calc(100vw - 24px));
+    text-align: center;
+    writing-mode: vertical-rl;
+    letter-spacing: 0.08em;
+    transform: translateY(8px);
+  }
+
+  .manual-hint-toast.is-visible {
+    transform: translateY(0);
+  }
+}
+
 .tablet-usage-toast {
   position: fixed;
   top: 12px;
@@ -298,6 +312,121 @@ body.simple-mode-active .tablet-undo-redo {
   filter: brightness(0) invert(1);
 }
 
+.base-edit-exit-btn {
+  display: none;
+  background: rgba(239, 68, 68, 0.92);
+  box-shadow: 0 8px 18px rgba(239, 68, 68, 0.28);
+}
+
+.base-edit-exit-btn img {
+  filter: brightness(0) invert(1);
+}
+
+.mobile-toolbar {
+  gap: 8px;
+}
+
+.mobile-toolbar .toolbar-button {
+  margin: 0;
+}
+
+.mobile-toolbar-group {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  display: none;
+  align-items: center;
+  gap: 10px;
+  z-index: 110;
+}
+
+.mobile-move-slot {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-move-slot > .toolbar-button {
+  margin: 0;
+}
+
+.mobile-menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.25);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 120;
+}
+
+.mobile-menu-panel {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 24px;
+  padding: 16px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.22);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 10px;
+  transform: translateY(16px);
+  transition: transform 0.2s ease;
+}
+
+.mobile-menu-button {
+  border: none;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: #1f2937;
+  font-size: 12px;
+  padding: 6px 4px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.mobile-menu-button:hover {
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.mobile-menu-button img {
+  width: 22px;
+  height: 22px;
+}
+
+.toolbar-button.is-hidden {
+  display: none;
+}
+
+body.mobile-menu-open .mobile-menu-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body.mobile-menu-open .mobile-menu-panel {
+  transform: translateY(0);
+}
+
+body.mobile-subtool-open .mobile-menu-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body.mobile-subtool-open .mobile-menu-panel {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(16px);
+}
+
 .tool-popouts {
   position: fixed;
   inset: 0;
@@ -338,6 +467,10 @@ body.simple-mode-active .tablet-undo-redo {
   filter: brightness(0) invert(1);
 }
 
+.base-edit-scale-control {
+  display: none;
+}
+
 @media (min-width: 768px) and (max-width: 1199px) {
   body.tablet-mode .toolbar {
     width: 64px;
@@ -365,6 +498,169 @@ body.simple-mode-active .tablet-undo-redo {
 
   body.tablet-mode .tablet-undo-redo {
     bottom: 72px;
+  }
+}
+
+@media (max-width: 767px) {
+  .toolbar-left,
+  .toolbar-right,
+  #simpleToolbar {
+    display: none !important;
+  }
+
+  .mobile-toolbar-group {
+    display: flex;
+  }
+
+  #mobileToolbar {
+    position: static;
+    transform: none;
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+    padding: 0 18px;
+    height: 56px;
+  }
+
+  body.mobile-menu-open #mobileToolbarGroup {
+    opacity: 0;
+    transform: translate(-50%, 16px);
+    pointer-events: none;
+  }
+
+  body.mobile-subtool-open #mobileToolbarGroup {
+    opacity: 0;
+    transform: translate(-50%, 16px);
+    pointer-events: none;
+  }
+
+  #tabletMoveToggleBtn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+  }
+
+  #tabletMoveToggleBtn[data-tooltip]::after {
+    top: auto;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    right: auto;
+    transform: translate(-50%, 6px);
+  }
+
+  #tabletMoveToggleBtn[data-tooltip]:hover::after,
+  #tabletMoveToggleBtn[data-tooltip]:focus-visible::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  #tabletMoveToggleBtn.tool-button--selected {
+    background: #1f6feb;
+  }
+
+  .tablet-undo-redo {
+    width: 100%;
+    display: flex;
+    position: fixed;
+    bottom: 5px;
+    height: 0;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    opacity: 1;
+    pointer-events: none;
+    visibility: visible;
+    transform: none;
+  }
+
+  #tabletUndoBtn,
+  #tabletRedoBtn {
+    position: fixed;
+    bottom: 92px;
+    height: 44px;
+    width: 54px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+    pointer-events: auto;
+  }
+
+  #tabletUndoBtn {
+    left: 0px;
+    border-radius: 0px 24px 24px 0px;
+  }
+
+  #tabletRedoBtn {
+    right: 0px;
+    border-radius: 24px 0px 0px 24px;
+  }
+
+  body.mobile-menu-open .tablet-undo-redo {
+    opacity: 0;
+    transform: translate(-50%, 16px);
+    pointer-events: none;
+    visibility: hidden;
+  }
+
+  .base-edit-scale-control {
+    position: fixed;
+    left: 50%;
+    top: 90px;
+    transform: translateX(-50%);
+    width: min(52vw, 240px);
+    padding: 10px 12px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+    display: none;
+    pointer-events: auto;
+    z-index: 115;
+  }
+
+  .base-edit-scale-value {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1f2937;
+    text-align: center;
+  }
+
+  .base-edit-scale-control input[type='range'] {
+    width: 100%;
+  }
+
+  body.base-editing .base-edit-scale-control {
+    display: block;
+  }
+
+  body.mobile-menu-open .base-edit-scale-control,
+  body.mobile-subtool-open .base-edit-scale-control {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .base-edit-exit-btn {
+    position: fixed;
+    left: 0;
+    top: 90px;
+    width: 54px;
+    height: 44px;
+    border-radius: 0px 24px 24px 0px;
+    pointer-events: auto;
+    z-index: 115;
+  }
+
+  body.base-editing .base-edit-exit-btn {
+    display: inline-flex;
+  }
+
+  body.mobile-menu-open .base-edit-exit-btn,
+  body.mobile-subtool-open .base-edit-exit-btn {
+    opacity: 0;
+    pointer-events: none;
   }
 }
 

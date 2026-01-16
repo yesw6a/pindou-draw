@@ -535,6 +535,9 @@ function commitResize() {
   updateStatusSizeLabel();
   saveHistory();
   closeOverlay();
+  try {
+    document.dispatchEvent(new CustomEvent('mobile:reset-subtools'));
+  } catch (_) { }
 
 }
 

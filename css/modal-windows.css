@@ -130,7 +130,7 @@
   display: none;
   gap: 10px;
   padding: 12px 14px;
-  background: #fafbfc;
+  background: transparent;
   border-bottom: 1px solid #f0f2f5;
   position: static;
 }
@@ -345,6 +345,48 @@ input[type="number"]:focus {
   
   border-right: none;
   max-width: 1000px;
+}
+
+@media (max-width: 767px) {
+  .photo-sketch-dialog {
+    width: min(92vw, 520px);
+    max-height: calc(100vh - 48px);
+  }
+
+  .photo-sketch-body {
+    overflow: hidden;
+  }
+
+  .photo-sketch-tablet-tabs {
+    display: flex;
+    position: static;
+  }
+
+  .photo-sketch-grid {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .photo-sketch-panel,
+  .photo-sketch-panel--preview {
+    max-width: none;
+    padding: 16px;
+    border-right: none;
+  }
+
+  #photoSketchOverlay[data-photo-sketch-view="params"] .photo-sketch-panel--preview {
+    display: none !important;
+  }
+
+  #photoSketchOverlay[data-photo-sketch-view="preview"] .photo-sketch-panel {
+    display: none;
+  }
+
+  #photoSketchOverlay[data-photo-sketch-view="params"] .photo-sketch-panel,
+  #photoSketchOverlay[data-photo-sketch-view="preview"] .photo-sketch-panel--preview {
+    display: flex;
+  }
 }
 
 .photo-sketch-panel--preview header {
@@ -626,7 +668,6 @@ body.tablet-mode #photoSketchOverlay .photo-sketch-preview-pane canvas {
   .ghost-button,
   .primary-button {
     width: 100%;
-    min-width: auto;
   }
 }
 
@@ -679,9 +720,9 @@ body.tablet-mode #photoSketchOverlay .photo-sketch-preview-pane canvas {
   width: 420px;
   min-width: 360px;
   max-width: 460px;
-  overflow-y: auto;
+  overflow-y: auto !important;
   scrollbar-width: thin;
-  padding-right: 24px;
+  padding-right: 24px !important;
 }
 
 .photo-sketch-grid > .photo-sketch-panel:last-child {

@@ -22,6 +22,12 @@ let referenceIdSeed = 0, activePointer = null, referenceWindowStackHandle = null
 const TABLET_LONG_PRESS_MS = 420;
 const TABLET_LONG_PRESS_TOLERANCE = 8;
 let pendingInteraction = null;
+
+function isTouchLongPressEnabled() {
+  if (state.isTabletMode) return true;
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false;
+  return window.matchMedia('(max-width: 767px)').matches;
+}
 export function initializeReferenceFeature() {
   if (!elements.referenceWindow) return;
 
@@ -274,7 +280,7 @@ function syncReferenceWindowState() {
 }
 function handleHeaderPointerDown(ev) {
   if (ev.button !== 0 || ev.target.closest('button')) return;
-  if (state.isTabletMode && ev.pointerType !== 'mouse') {
+  if (isTouchLongPressEnabled() && ev.pointerType !== 'mouse') {
     startLongPress(ev, 'move');
     return;
   }
@@ -283,7 +289,7 @@ function handleHeaderPointerDown(ev) {
 function handleWindowPointerDown(ev) {
   
   if (!state.referenceWindowMinimized || ev.button !== 0 || ev.target.closest('button')) return;
-  if (state.isTabletMode && ev.pointerType !== 'mouse') {
+  if (isTouchLongPressEnabled() && ev.pointerType !== 'mouse') {
     startLongPress(ev, 'move');
     return;
   }
@@ -293,7 +299,7 @@ function handleWindowPointerDown(ev) {
 function handleResizerPointerDown(ev) {
   if (state.referenceWindowMinimized || ev.button !== 0) return;
   ev.stopPropagation();
-  if (state.isTabletMode && ev.pointerType !== 'mouse') {
+  if (isTouchLongPressEnabled() && ev.pointerType !== 'mouse') {
     startLongPress(ev, 'resize');
     return;
   }
@@ -406,7 +412,7 @@ function handlePointerMove(ev) {
     return;
   }
 
-  if (state.isTabletMode && ev.pointerType !== 'mouse') {
+  if (isTouchLongPressEnabled() && ev.pointerType !== 'mouse') {
     ev.preventDefault();
   }
 

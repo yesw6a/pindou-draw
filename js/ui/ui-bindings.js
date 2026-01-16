@@ -65,6 +65,11 @@ let paletteLoadedListenerBound = false;
 let paletteReady = false;
 let manualHintPending = false;
 
+function isMobileLayout() {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false;
+  return window.matchMedia('(max-width: 767px)').matches;
+}
+
 export function initializeUIBindings() {
   initializeTabletMode();
   initializePanelSwitcher();
@@ -83,6 +88,8 @@ export function initializeUIBindings() {
   bindManualHintToast();
   bindTabletUsageToast();
   bindTabletToolbarTooltipAutoHide();
+  bindMobileMenu();
+  bindMobileToolbarLayout();
   bindDocsLinkRouting();
   bindTabletFullscreenResilience();
   initializeLocalStorageFeature();
@@ -122,11 +129,20 @@ function positionManualHintToast() {
 
   const margin = 12;
   const anchorRect = anchor.getBoundingClientRect();
+  const mobileAnchor = isMobileLayout()
+    ? document.querySelector('#mobileMenuBtn') ?? document.querySelector('.mobile-menu-panel')
+    : null;
+  const targetRect = mobileAnchor?.getBoundingClientRect?.() || anchorRect;
   const toastWidth = toast.offsetWidth || 280;
   const toastHeight = toast.offsetHeight || 40;
 
   let left = anchorRect.right + 12;
   let top = anchorRect.top + anchorRect.height / 2 - toastHeight / 2;
+
+  if (mobileAnchor) {
+    left = targetRect.left + targetRect.width / 2 - toastWidth / 2;
+    top = targetRect.top - toastHeight - 10;
+  }
 
   left = Math.max(margin, Math.min(left, window.innerWidth - toastWidth - margin));
   top = Math.max(margin, Math.min(top, window.innerHeight - toastHeight - margin));
@@ -147,6 +163,13 @@ function showManualHintToast() {
   if (state.updateVisible || state.introVisible) {
     manualHintPending = true;
     return;
+  }
+  const mobileText = toast.dataset.textMobile;
+  const defaultText = toast.dataset.textDefault;
+  if (isMobileLayout() && mobileText) {
+    toast.textContent = mobileText;
+  } else if (defaultText) {
+    toast.textContent = defaultText;
   }
   if (enqueueToastAfterPaletteLoaded(showManualHintToast)) return;
   manualHintShown = true;
@@ -264,7 +287,6 @@ function bindTabletToolbarTooltipAutoHide() {
       tabletTooltipHideTimer = null;
     }
     if (tabletTooltipActiveBtn) {
-      tabletTooltipActiveBtn.classList.remove('tablet-tooltip-visible');
       tabletTooltipActiveBtn = null;
     }
     hideOverlay();
@@ -287,17 +309,170 @@ function bindTabletToolbarTooltipAutoHide() {
     btn.addEventListener('pointerdown', () => {
       if (!state.isTabletMode) return;
       hide();
-      btn.classList.add('tablet-tooltip-visible');
       tabletTooltipActiveBtn = btn;
       showOverlayForButton(btn);
       tabletTooltipHideTimer = setTimeout(() => {
         if (tabletTooltipActiveBtn !== btn) return;
-        btn.classList.remove('tablet-tooltip-visible');
         tabletTooltipActiveBtn = null;
         hideOverlay();
       }, 1500);
     });
   });
+}
+
+function bindMobileMenu() {
+  const button = elements.mobileMenuBtn;
+  const overlay = elements.mobileMenuOverlay;
+  const panel = elements.mobileMenuPanel;
+  if (!button || !overlay || !panel) return;
+
+  const close = () => {
+    document.body.classList.remove('mobile-menu-open');
+    document.body.classList.remove('mobile-subtool-open');
+    overlay.setAttribute('aria-hidden', 'true');
+  };
+
+  const open = () => {
+    document.body.classList.add('mobile-menu-open');
+    overlay.setAttribute('aria-hidden', 'false');
+  };
+
+  const openSubtool = (target) => {
+    if (!isMobileLayout()) return;
+    const trigger = document.querySelector(`[data-role="panel"][data-panel-target="${target}"]`);
+    if (!trigger) return;
+    open();
+    document.body.classList.add('mobile-subtool-open');
+    trigger.click();
+  };
+
+  const closeSubtool = () => {
+    if (!document.body.classList.contains('mobile-subtool-open')) return;
+    closeAllPanels({ refocusTool: false });
+    document.body.classList.remove('mobile-subtool-open');
+    open();
+  };
+
+  button.addEventListener('click', (event) => {
+    event.stopPropagation();
+    if (document.body.classList.contains('mobile-menu-open')) {
+      close();
+    } else {
+      open();
+    }
+  });
+
+  overlay.addEventListener('click', (event) => {
+    if (panel.contains(event.target)) return;
+    const activePanel = document.querySelector('.tool-panel.is-active');
+    if (document.body.classList.contains('mobile-subtool-open') && activePanel && activePanel.contains(event.target)) {
+      return;
+    }
+    if (document.body.classList.contains('mobile-subtool-open')) {
+      closeSubtool();
+      return;
+    }
+    close();
+  });
+
+  elements.mobileMenuCanvasBtn?.addEventListener('click', () => {
+    openSubtool('canvas-settings');
+  });
+  elements.mobileMenuInfoBtn?.addEventListener('click', () => {
+    openSubtool('canvas-info');
+  });
+  elements.mobileMenuManualBtn?.addEventListener('click', () => {
+    openSubtool('manual');
+  });
+  elements.mobileMenuBaseBtn?.addEventListener('click', () => {
+    openSubtool('base-settings');
+  });
+  elements.mobileMenuReferenceBtn?.addEventListener('click', () => {
+    if (!isMobileLayout()) return;
+    close();
+    toggleReferenceWindow(true);
+  });
+  elements.mobileMenuExportBtn?.addEventListener('click', () => {
+    openSubtool('export-tools');
+  });
+  elements.mobileMenuImportBtn?.addEventListener('click', () => {
+    openSubtool('import-tools');
+  });
+  elements.mobileMenuDisplayBtn?.addEventListener('click', () => {
+    openSubtool('display-settings');
+  });
+  elements.mobileMenuFullscreenBtn?.addEventListener('click', () => {
+    close();
+    closeAllPanels({ refocusTool: false });
+    elements.focusFullscreenBtn?.click();
+  });
+  elements.mobileMenuImageOpsBtn?.addEventListener('click', () => {
+    openSubtool('image-operations');
+  });
+  elements.mobileMenuPaletteManageBtn?.addEventListener('click', () => {
+    openSubtool('palette-management');
+  });
+  elements.mobileMenuColorManageBtn?.addEventListener('click', () => {
+    openSubtool('color-management');
+  });
+
+  elements.panelCloseButtons?.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (!isMobileLayout()) return;
+      if (!document.body.classList.contains('mobile-subtool-open')) return;
+      document.body.classList.remove('mobile-subtool-open');
+      open();
+    });
+  });
+}
+
+document.addEventListener('mobile:reset-subtools', () => {
+  if (!isMobileLayout()) return;
+  closeAllPanels({ refocusTool: false });
+  document.body.classList.remove('mobile-menu-open', 'mobile-subtool-open');
+  elements.mobileMenuOverlay?.setAttribute('aria-hidden', 'true');
+});
+
+document.addEventListener('mobile:close-panels', () => {
+  if (!isMobileLayout()) return;
+  closeAllPanels({ refocusTool: false });
+});
+
+function bindMobileToolbarLayout() {
+  const handleLayout = () => {
+    const moveBtn = elements.tabletMoveToggleBtn;
+    const toolbar = elements.mobileToolbar;
+    const slot = elements.mobileMoveSlot;
+    const group = elements.mobileToolbarGroup;
+    const tabletBar = elements.tabletUndoRedoBar;
+    if (!moveBtn || !toolbar) return;
+    if (!isMobileLayout()) {
+      if (tabletBar && !tabletBar.contains(moveBtn)) {
+        tabletBar.insertBefore(moveBtn, elements.tabletRedoBtn ?? null);
+      }
+      if (group) {
+        group.setAttribute('aria-hidden', 'true');
+      }
+      moveBtn.style.left = '';
+      moveBtn.style.bottom = '';
+      moveBtn.style.width = '';
+      moveBtn.style.height = '';
+      toolbar.style.left = '';
+      toolbar.style.transform = '';
+      return;
+    }
+    if (slot && !slot.contains(moveBtn)) {
+      slot.appendChild(moveBtn);
+    }
+    if (group) {
+      group.setAttribute('aria-hidden', 'false');
+    }
+  };
+
+  window.addEventListener('resize', handleLayout);
+  window.addEventListener('orientationchange', handleLayout);
+  document.addEventListener('DOMContentLoaded', handleLayout);
+  handleLayout();
 }
 
 function bindDocsLinkRouting() {
@@ -307,8 +482,13 @@ function bindDocsLinkRouting() {
   const originalHref = link.getAttribute('href') || 'manual.html';
   link.dataset.desktopHref = originalHref;
   link.dataset.tabletHref = './manual-tablet.html';
+  link.dataset.mobileHref = './manual-phone.html';
 
   const applyHref = () => {
+    if (isMobileLayout()) {
+      link.setAttribute('href', link.dataset.mobileHref);
+      return;
+    }
     link.setAttribute('href', state.isTabletMode ? link.dataset.tabletHref : link.dataset.desktopHref);
   };
 
@@ -354,12 +534,22 @@ function bindBaseImageControls() {
   elements.importBaseBtn?.addEventListener('click', () => elements.baseImageInput?.click());
   elements.clearBaseBtn?.addEventListener('click', clearBaseImage);
   elements.baseImageInput?.addEventListener('change', handleBaseImageChange);
-  elements.toggleBaseEditBtn?.addEventListener('click', toggleBaseEditMode);
+  elements.toggleBaseEditBtn?.addEventListener('click', () => {
+    const wasEditing = state.baseEditing;
+    toggleBaseEditMode();
+    if (!wasEditing && state.baseEditing && isMobileLayout()) {
+      document.dispatchEvent(new Event('mobile:reset-subtools'));
+    }
+  });
   elements.recenterBaseBtn?.addEventListener('click', recenterBaseImage);
   elements.snapBaseToCanvasBtn?.addEventListener('click', snapBaseToCanvas);
+  elements.baseEditExitBtn?.addEventListener('click', () => {
+    toggleBaseEditMode(false);
+  });
   elements.baseScaleRange?.addEventListener('input', handleBaseScaleRangeInput);
   elements.baseScaleInput?.addEventListener('input', handleBaseScaleInput);
   elements.baseScaleInput?.addEventListener('change', handleBaseScaleInput);
+  elements.baseEditScaleRange?.addEventListener('input', handleBaseScaleRangeInput);
   elements.baseLayerSelect?.addEventListener('change', (event) => {
     state.baseLayerPosition = event.target.value;
     applyBaseLayerPosition();
@@ -454,14 +644,18 @@ function bindPaletteControls() {
   elements.paletteFilter?.addEventListener('input', renderPalette);
   elements.deletePaletteBtn?.addEventListener('click', handleDeletePalette);
   elements.paletteHistorySelect?.addEventListener('change', handlePaletteSelectionChange);
+  elements.mobilePaletteWindowBtn?.addEventListener('click', () => {
+    if (!isMobileLayout()) return;
+    elements.paletteWindowToggleBtn?.click();
+  });
   const syncCreatePaletteState = () => {
     if (!elements.createPaletteBtn) return;
-    const disabled = state.isTabletMode;
+    const disabled = state.isTabletMode || isMobileLayout();
     elements.createPaletteBtn.setAttribute('aria-disabled', disabled ? 'true' : 'false');
     elements.createPaletteBtn.classList.toggle('is-disabled', disabled);
   };
   elements.createPaletteBtn?.addEventListener('click', () => {
-    if (state.isTabletMode) {
+    if (state.isTabletMode || isMobileLayout()) {
       window.alert('制作色卡仅支持电脑端，请在电脑上使用该功能。');
       return;
     }
@@ -473,6 +667,21 @@ function bindPaletteControls() {
   });
   document.addEventListener('tablet:change', syncCreatePaletteState);
   syncCreatePaletteState();
+
+  const paletteWindow = elements.paletteWindow;
+  const syncMobilePaletteButton = () => {
+    const button = elements.mobilePaletteWindowBtn;
+    if (!button || !paletteWindow) return;
+    const isOpen = paletteWindow.getAttribute('aria-hidden') === 'false' && paletteWindow.classList.contains('is-visible');
+    button.classList.toggle('is-active', isOpen);
+    button.setAttribute('aria-pressed', isOpen ? 'true' : 'false');
+  };
+
+  if (paletteWindow) {
+    const observer = new MutationObserver(syncMobilePaletteButton);
+    observer.observe(paletteWindow, { attributes: true, attributeFilter: ['aria-hidden', 'class'] });
+    syncMobilePaletteButton();
+  }
 }
 
 function bindGridOverlayControls() {
@@ -730,12 +939,40 @@ function createNewCanvas() {
 
   createCanvas(width, height, { cellSize: normalizedResolution });
   renderSelectionLayers();
+  if (isMobileLayout()) {
+    try {
+      document.dispatchEvent(new CustomEvent('mobile:reset-subtools'));
+    } catch (_) { }
+  }
+}
+
+function updateCanvasInfoPanel() {
+  if (!elements.canvasInfoCreated && !elements.canvasInfoPalette && !elements.canvasInfoSize && !elements.canvasInfoBase) {
+    return;
+  }
+  if (elements.canvasInfoCreated && elements.statusCreated) {
+    elements.canvasInfoCreated.textContent = elements.statusCreated.textContent?.trim() || '--';
+  }
+  if (elements.canvasInfoPalette && elements.statusPalette) {
+    elements.canvasInfoPalette.textContent = elements.statusPalette.textContent?.trim() || '--';
+  }
+  if (elements.canvasInfoSize && elements.statusSize) {
+    elements.canvasInfoSize.textContent = elements.statusSize.textContent?.trim() || '--';
+  }
+  if (elements.canvasInfoBase && elements.statusBase) {
+    elements.canvasInfoBase.textContent = elements.statusBase.textContent?.trim() || '--';
+  }
 }
 
 async function handleProjectFileImport(event) {
   const file = event.target.files?.[0];
   if (file) {
-    await importProjectFile(file);
+    try {
+      await importProjectFile(file);
+      if (isMobileLayout()) {
+        document.dispatchEvent(new CustomEvent('mobile:reset-subtools'));
+      }
+    } catch (_) { }
   }
   event.target.value = '';
 }
@@ -757,6 +994,13 @@ function initializePanelSwitcher() {
 
   const entryByTarget = new Map(panelEntries.map((entry) => [entry.target, entry]));
   let activeEntry = panelEntries.find((entry) => entry.panel.classList.contains('is-active')) ?? null;
+  if (isMobileLayout() && activeEntry?.target === 'canvas-settings') {
+    activeEntry.panel.classList.remove('is-active');
+    activeEntry.panel.setAttribute('aria-hidden', 'true');
+    activeEntry.button.classList.remove('is-active');
+    activeEntry.button.setAttribute('aria-expanded', 'false');
+    activeEntry = null;
+  }
 
   const setPanelVisibility = (entry, visible) => {
     entry.panel.classList.toggle('is-active', visible);
@@ -796,6 +1040,9 @@ function initializePanelSwitcher() {
       activeEntry = entry;
       state.activePanel = entry.target;
       updateToolButtons();
+      if (entry.target === 'canvas-info') {
+        updateCanvasInfoPanel();
+      }
     });
   });
 
@@ -814,7 +1061,7 @@ function initializePanelSwitcher() {
   });
 
   hideAllPanels();
-  if (activeEntry) {
+  if (activeEntry && !(isMobileLayout() && activeEntry.target === 'canvas-settings')) {
     setPanelVisibility(activeEntry, true);
     state.activePanel = activeEntry.target;
     updateToolButtons();
@@ -835,6 +1082,7 @@ function closeTabletPalettePanelIfVisible() {
 
 function bindFocusModeControls() {
   const toggleFullscreen = () => {
+    closeAllPanels({ refocusTool: false });
     const now = Date.now();
     lastFullscreenToggleTime = now;
     if (document.fullscreenElement) {
@@ -850,12 +1098,6 @@ function bindFocusModeControls() {
     }
   };
   elements.focusFullscreenBtn?.addEventListener('click', toggleFullscreen);
-  elements.focusSimpleModeBtn?.addEventListener('click', () => {
-    if (state.isTabletMode) return;
-    setSimpleMode(!state.simpleMode);
-  });
-  elements.forceTabletModeBtnPanel?.addEventListener('click', () => setTabletModeOverride('tablet'));
-  elements.forceDesktopModeBtnPanel?.addEventListener('click', () => setTabletModeOverride('desktop'));
   document.addEventListener('fullscreenchange', updateFullscreenButtonState);
   updateFullscreenButtonState();
   initializeSimpleModeUI();
@@ -950,8 +1192,12 @@ function initializeTabletMode() {
   const applyState = () => {
     const mediaMatches = queries.some((mq) => mq.matches);
     let matches = mediaMatches;
-    if (state.tabletModeOverride === 'tablet') matches = true;
-    if (state.tabletModeOverride === 'desktop') matches = false;
+    if (!isMobileLayout()) {
+      if (state.tabletModeOverride === 'tablet') matches = true;
+      if (state.tabletModeOverride === 'desktop') matches = false;
+    } else {
+      matches = false;
+    }
     const prev = state.isTabletMode;
     state.isTabletMode = matches;
     document.body?.classList.toggle('tablet-mode', matches);
@@ -1049,7 +1295,7 @@ function initializeSimpleModeUI() {
 
 function setSimpleMode(nextState) {
   const enabled = Boolean(nextState);
-  if (enabled && state.isTabletMode) {
+  if (enabled && (state.isTabletMode || isMobileLayout())) {
     updateSimpleModeButtonState();
     return;
   }
@@ -1066,11 +1312,19 @@ function setSimpleMode(nextState) {
 }
 
 function updateSimpleModeButtonState() {
-  const locked = state.isTabletMode;
+  const locked = state.isTabletMode || isMobileLayout();
+  if (locked && state.simpleMode) {
+    state.simpleMode = false;
+    document.body?.classList.remove('simple-mode-active');
+    if (elements.simpleToolbar) {
+      elements.simpleToolbar.setAttribute('aria-hidden', 'true');
+    }
+  }
+  const lockedLabel = isMobileLayout() ? '移动端禁用简洁模式' : '平板端禁用简洁模式';
   if (elements.focusSimpleModeBtn) {
     elements.focusSimpleModeBtn.disabled = locked;
     elements.focusSimpleModeBtn.textContent = locked
-      ? '平板端禁用简洁模式'
+      ? lockedLabel
       : (state.simpleMode ? '退出简洁模式' : '进入简洁模式');
     elements.focusSimpleModeBtn.classList.toggle('is-active', state.simpleMode && !locked);
   }
@@ -1095,31 +1349,43 @@ function updateTabletUI() {
 
 function updateTabletUndoRedoVisibility() {
   if (!elements.tabletUndoRedoBar) return;
-  const visible = state.isTabletMode;
+  const visible = state.isTabletMode || isMobileLayout();
   elements.tabletUndoRedoBar.classList.toggle('is-visible', visible);
   elements.tabletUndoRedoBar.setAttribute('aria-hidden', visible ? 'false' : 'true');
 }
 
 function updateMoveToggleUI() {
   if (!elements.tabletMoveToggleBtn) return;
-  const active = state.isTabletMode && state.moveModeEnabled;
-  elements.tabletMoveToggleBtn.disabled = !state.isTabletMode;
+  const inCompactMode = state.isTabletMode || isMobileLayout();
+  const active = inCompactMode && state.moveModeEnabled;
+  elements.tabletMoveToggleBtn.disabled = !inCompactMode;
   elements.tabletMoveToggleBtn.classList.toggle('is-active', active);
+  elements.tabletMoveToggleBtn.classList.toggle('tool-button--selected', active);
   elements.tabletMoveToggleBtn.setAttribute('aria-pressed', active ? 'true' : 'false');
 }
 
 function updateFullscreenButtonState() {
   const isFullscreen = Boolean(document.fullscreenElement);
   if (elements.focusFullscreenBtn) {
-    elements.focusFullscreenBtn.textContent = isFullscreen ? '退出全屏' : '进入全屏';
+    const label = isFullscreen ? '退出全屏' : '全屏';
+    elements.focusFullscreenBtn.setAttribute('aria-label', label);
+    elements.focusFullscreenBtn.dataset.tooltip = label;
+    elements.focusFullscreenBtn.setAttribute('title', label);
     elements.focusFullscreenBtn.classList.toggle('is-active', isFullscreen);
+  }
+  if (elements.mobileMenuFullscreenBtn) {
+    const label = isFullscreen ? '退出全屏' : '全屏';
+    elements.mobileMenuFullscreenBtn.setAttribute('aria-label', label);
+    const textEl = elements.mobileMenuFullscreenBtn.querySelector('span');
+    if (textEl) textEl.textContent = label;
   }
   updateModeOverrideSwitchUI();
 }
 
 function updateModeOverrideSwitchUI() {
-  const showDesktopSwitch = !state.isTabletMode;
-  const showTabletSwitch = state.isTabletMode;
+  const isMobile = isMobileLayout();
+  const showDesktopSwitch = !isMobile && !state.isTabletMode;
+  const showTabletSwitch = !isMobile && state.isTabletMode;
 
   if (elements.forceTabletModeBtnPanel) {
     elements.forceTabletModeBtnPanel.style.display = showDesktopSwitch ? '' : 'none';
@@ -1143,7 +1409,7 @@ function updateToolPopouts() {
   const { toolPopouts, eraserPopout, selectionPopout } = elements;
   if (!toolPopouts || !eraserPopout || !selectionPopout) return;
 
-  const isTablet = state.isTabletMode;
+  const isCompactMode = state.isTabletMode || isMobileLayout();
 
   // Always hide all popouts first to ensure a clean state.
   eraserPopout.classList.remove('is-visible');
@@ -1155,7 +1421,7 @@ function updateToolPopouts() {
   toolPopouts.setAttribute('aria-hidden', 'true');
   
   // Popouts are exclusive to tablet mode.
-  if (!isTablet) {
+  if (!isCompactMode) {
     state.tabletEraserActive = false;
     state.selectionToolMode = 'add'; // Reset state when leaving tablet mode
     return;
@@ -1220,6 +1486,11 @@ function highlightSelectionButton(button, active) {
 }
 
 function positionToolPopouts() {
+  if (isMobileLayout()) {
+    positionPopoutCentered(elements.eraserPopout);
+    positionPopoutCentered(elements.selectionPopout);
+    return;
+  }
   positionPopout(elements.eraserPopout, resolveAnchorButton());
   positionPopout(elements.selectionPopout, elements.toolSelectionBtn);
 }
@@ -1228,6 +1499,26 @@ function resolveAnchorButton() {
   if (state.currentTool === 'pencil') return elements.toolPencilBtn;
   if (state.currentTool === 'bucket') return elements.toolBucketBtn;
   return null;
+}
+
+function positionPopoutCentered(popout) {
+  if (!popout || !popout.classList.contains('is-visible')) return;
+  const toolbarGroup = elements.mobileToolbarGroup;
+  if (!toolbarGroup) return;
+  const rect = toolbarGroup.getBoundingClientRect();
+  const { scrollX, scrollY, innerWidth, innerHeight } = window;
+  popout.style.visibility = 'hidden';
+  popout.style.display = 'flex';
+  const popWidth = popout.offsetWidth;
+  const popHeight = popout.offsetHeight;
+  const spacing = 12;
+  const top = rect.top - popHeight - spacing + scrollY;
+  const left = innerWidth / 2 - popWidth / 2 + scrollX;
+  const clampedTop = Math.max(12 + scrollY, Math.min(top, innerHeight + scrollY - popHeight - 12));
+  const clampedLeft = Math.max(12 + scrollX, Math.min(left, innerWidth + scrollX - popWidth - 12));
+  popout.style.top = `${clampedTop}px`;
+  popout.style.left = `${clampedLeft}px`;
+  popout.style.visibility = 'visible';
 }
 
 function positionPopout(popout, anchor) {
@@ -1255,7 +1546,7 @@ function setSelectionToolMode(mode) {
 }
 
 function toggleMoveMode() {
-  if (!state.isTabletMode) return;
+  if (!state.isTabletMode && !isMobileLayout()) return;
   state.moveModeEnabled = !state.moveModeEnabled;
   updateMoveToggleUI();
 }
@@ -1268,7 +1559,7 @@ function enhanceToolbarTooltips() {
     { selector: '[data-panel-target="export-tools"]', tooltip: '导出文件或本地保存' },
     { selector: '[data-panel-target="import-tools"]', tooltip: '导入文件或本地读取' },
     { selector: '[data-panel-target="display-settings"]', tooltip: '显示模式设置' },
-    { selector: '[data-panel-target="focus-mode"]', tooltip: '全屏和简洁模式开关' },
+    { selector: '#focusFullscreenBtn', tooltip: '全屏' },
     { selector: '[data-panel-target="manual"]', tooltip: '查看使用手册与更新日志' },
     { selector: '#toolPencilBtn', tooltip: '画笔', ariaLabel: '画笔工具' },
     { selector: '#toolBucketBtn', tooltip: '油漆桶', ariaLabel: '填充工具' },

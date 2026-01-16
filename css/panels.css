@@ -210,3 +210,24 @@ body.tablet-mode .panel-stack-right #paletteWindow.tablet-palette-panel  {
 .color-management__action-button--primary:hover {
   background: linear-gradient(135deg, #1a5ed0, #4f84e2);
 }
+
+@media (max-width: 767px) {
+  body.mobile-subtool-open .panel-stack {
+    left: 50%;
+    right: auto;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(92vw, 360px);
+    pointer-events: auto;
+    z-index: 210;
+  }
+
+  body.mobile-subtool-open .tool-panel {
+    max-height: 72vh;
+    width: 100%;
+  }
+
+  body.mobile-subtool-open #panel-import-tools .tool-panel__body button {
+    width: 100%;
+  }
+}

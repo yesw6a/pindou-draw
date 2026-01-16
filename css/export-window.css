@@ -674,3 +674,136 @@ body.tablet-mode #exportWindow[data-tablet-export-view="settings"] .export-highl
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+@media (max-width: 767px) {
+  .export-highlight-section,
+  .export-settings-section {
+    grid-column: inherit;
+  }
+
+  #exportWindow.modal-window {
+    z-index: 240;
+  }
+
+  #exportWindow .modal-window__dialog {
+    width: min(94vw, 560px);
+    max-height: calc(100vh - 140px);
+  }
+
+  #exportWindow .modal-window__body {
+    height: calc(100vh - 220px);
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  #exportWindow .export-tablet-tabs {
+    display: flex;
+    padding: 12px 16px 0;
+    background: transparent;
+  }
+
+  #exportWindow .export-tab-button {
+    transform: none;
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  #exportWindow .export-layout {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    min-height: 0;
+  }
+
+  #exportWindow .export-preview-section {
+    max-width: none;
+  }
+
+  #exportWindow .preview-container {
+    min-height: 220px;
+    gap: 10px;
+  }
+
+  #exportWindow .preview-stage {
+    min-height: 180px;
+    padding: 6px;
+  }
+
+  #exportWindow .preview-controls {
+    padding-top: 8px;
+    font-size: 12px;
+  }
+
+  #exportWindow .settings-group {
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  #exportWindow .export-settings-section .form-field {
+    padding: 12px 14px;
+  }
+
+  #exportWindow[data-tablet-export-view="preview"] .export-settings-section,
+  #exportWindow[data-tablet-export-view="preview"] .export-highlight-section {
+    display: none;
+  }
+
+  #exportWindow[data-tablet-export-view="settings"] .export-preview-section {
+    display: none;
+  }
+
+  #exportWindow[data-tablet-export-view="settings"] .export-highlight-section {
+    display: none;
+  }
+
+  #exportWindow[data-tablet-export-view="highlight"] .export-preview-section,
+  #exportWindow[data-tablet-export-view="highlight"] .export-settings-section {
+    display: none;
+  }
+
+  #exportWindow .highlight-controls {
+    gap: 10px;
+  }
+
+  #exportWindow .highlight-buttons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  #exportWindow .highlight-list-header,
+  #exportWindow .highlight-color-item {
+    grid-template-columns: 56px repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  #exportWindow .highlight-color-item {
+    min-height: 52px;
+  }
+
+  #exportWindow #highlightColorList.highlight-list {
+    min-height: 220px;
+  }
+
+  #exportWindow .highlight-note {
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  #exportWindow .export-modal-window__footer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  #exportWindow .export-modal-window__footer .ghost-button,
+  #exportWindow .export-modal-window__footer .primary-button {
+    flex: 1 1 0;
+  }
+
+  .preview-scale {
+    text-align: center;
+    width: 60px;
+  }
+}
