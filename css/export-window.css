@@ -679,6 +679,7 @@ body.tablet-mode #exportWindow[data-tablet-export-view="settings"] .export-highl
   .export-highlight-section,
   .export-settings-section {
     grid-column: inherit;
+    overflow-y: auto;
   }
 
   #exportWindow.modal-window {
