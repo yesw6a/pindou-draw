@@ -64,6 +64,7 @@
           <ul class="doc-tree">
             <li><a href="#chapter-gestures">手势操作</a></li>
             <li><a href="#chapter-canvas-edit">画布的创建与编辑</a></li>
+            <li><a href="#chapter-canvas-data">画布信息</a></li>
             <li><a href="#chapter-bg">底图的设置与编辑</a></li>
             <li><a href="#chapter-float-ref">参考图窗口</a></li>
             <li><a href="#chapter-export">导出草图</a></li>
@@ -164,33 +165,35 @@
         <section class="doc-section" id="to-tablet">
           <span class="doc-section__eyebrow">Page 1</span>
           <h2 class="doc-section__title">电脑端</h2>
-          <p class="doc-paragraph">可通过 左侧工具栏 -> 全屏和简洁模式开关 -> 改为电脑端操作与显示 将绘画操作切换为电脑端</p>
-          <p class="doc-paragraph">切换为电脑端后在左侧的工具栏重新打开说明书即可切换为电脑端说明书</p>
+          <p class="doc-paragraph">电脑端只可在类似电脑设备屏幕大小的情况打开，或在平板端强行切换，手机端无法强行切换</p>
+          <p class="doc-paragraph">使用电脑端后在左方工具栏中打开打开端说明书</p>
           <p class="doc-paragraph">点击此处可快速切换
             <a href="./manual.html" target="_self" rel="noopener noreferrer">
               电脑端说明书
             </a>
           </p>
           <figure class="doc-image">
-            <img src="./doc-phone-image/TO-tablet-where.png" alt="如何切换至平板端" />
-            <figcaption class="doc-image__caption">图：平板端切换演示</figcaption>
+            <img src="./doc-phone-image/TO-computer-where.png" alt="电脑端" />
+            <figcaption class="doc-image__caption">图：电脑端</figcaption>
           </figure>
         </section>
+
+        <hr />
 
         <!-- 平板端 -->
         <section class="doc-section" id="to-tablet">
           <span class="doc-section__eyebrow">Page 2</span>
           <h2 class="doc-section__title">平板端</h2>
-          <p class="doc-paragraph">手机端只可在类似手机设备屏幕大小的情况打开，无法强行切换</p>
-          <p class="doc-paragraph">使用手机端后在下方菜单栏中打开手机端说明书</p>
+          <p class="doc-paragraph">平板端只可在类似平板设备屏幕大小的情况打开，或在电脑端强行切换，手机端无法强行切换</p>
+          <p class="doc-paragraph">使用平板端后在左方工具栏中打开打开端说明书</p>
           <p class="doc-paragraph">点击此处可快速切换
-            <a href="./manual-phone.html" target="_self" rel="noopener noreferrer">
-              手机端说明书
+            <a href="./manual-tablet.html" target="_self" rel="noopener noreferrer">
+              平板端说明书
             </a>
           </p>
           <figure class="doc-image">
-            <img src="./doc-image/TO-tablet-where.png" alt="手机端" />
-            <figcaption class="doc-image__caption">图：手机端</figcaption>
+            <img src="./doc-phone-image/TO-tablet-where.png" alt="平板端" />
+            <figcaption class="doc-image__caption">图：平板端</figcaption>
           </figure>
         </section>
       </article>
@@ -202,7 +205,7 @@
           <span class="doc-section__eyebrow">Page 1</span>
           <h2 class="doc-section__title">操作 UI</h2>
           <p class="doc-paragraph">
-            主界面被划分为三大区域：左右下工具栏（红框）、绘制画布（蓝框）与底部信息栏（绿框）。
+            主界面被划分为两大区域：下方工具栏（红框）、绘制画布（绿框）。
           </p>
           <figure class="doc-image">
             <img src="./doc-phone-image/UI-position.png" alt="界面区域划分示意" />
@@ -210,53 +213,50 @@
           </figure>
 
           <h3 class="doc-section__subtitle">工具栏</h3>
-
           <details class="doc-tree-group" close>
-            <summary>左侧工具栏(可展开)</summary>
+            <summary>底部工具栏(可展开)</summary>
             <ul class="doc-list doc-list--unordered">
-              <li>新建画布/扩裁画布</li>
-              <li>导入或校准底图</li>
-              <li>打开参考窗口</li>
-              <li>导出文件或本地保存</li>
-              <li>导入文件或本地读取</li>
-              <li>显示模式设置</li>
-              <li>全屏 / 简洁模式开关</li>
-              <li>查看使用手册与更新日志</li>
+              <li>撤回 / 回退 <span style="color: #1eaf49;">(绿框)</span></li>
+              <li>移动模式 <span style="color: #eec03a;">(黄框)</span></li>
+              <li>画笔 <span style="color: #fe0d03;">(红框)</span></li>
+              <li>油漆桶 <span style="color: #fe0d03;">(红框)</span></li>
+              <li>吸管 <span style="color: #fe0d03;">(红框)</span></li>
+              <li>选区 <span style="color: #fe0d03;">(红框)</span></li>
+              <li>调色板 <span style="color: #fe0d03;">(红框)</span></li>
+              <li>菜单栏 <span style="color: #fe0d03;">(红框)</span></li>
             </ul>
             <figure class="doc-image">
-              <img src="./doc-phone-image/UI-left-toolbar.png" alt="左侧工具栏" />
-              <figcaption class="doc-image__caption">图：左侧工具栏</figcaption>
+              <img src="./doc-phone-image/UI-toolbar.png" alt="下方工具栏" />
+              <figcaption class="doc-image__caption">图：下方工具栏</figcaption>
             </figure>
           </details>
 
+          <h3 class="doc-section__subtitle">菜单栏</h3>
+          <p class="doc-paragraph">点击工具栏最后一项可呼出菜单栏</p>
+          <figure class="doc-image">
+            <img src="./doc-phone-image/UI-tool-manaul-click.gif" alt="呼出菜单栏按钮" />
+            <figcaption class="doc-image__caption">图：呼出菜单栏按钮</figcaption>
+          </figure>
+
           <details class="doc-tree-group" close>
-            <summary>右侧工具栏(可展开)</summary>
+            <summary>菜单栏(可展开)</summary>
             <ul class="doc-list doc-list--unordered">
-              <li>画笔</li>
-              <li>油漆桶</li>
-              <li>吸管</li>
-              <li>选区</li>
-              <li>调色板</li>
+              <li>使用说明</li>
+              <li>新建画布</li>
+              <li>画布信息</li>
+              <li>底图校准</li>
+              <li>参考窗口</li>
+              <li>导出 / 保存</li>
+              <li>导入 / 读取</li>
+              <li>显示设置</li>
+              <li>全屏</li>
               <li>图像操作</li>
               <li>色卡管理</li>
               <li>颜色管理</li>
             </ul>
             <figure class="doc-image">
-              <img src="./doc-phone-image/UI-right-toolbar.png" alt="右侧工具栏" />
-              <figcaption class="doc-image__caption">图：右侧工具栏</figcaption>
-            </figure>
-          </details>
-
-          <details class="doc-tree-group" close>
-            <summary>下方工具栏(可展开)</summary>
-            <ul class="doc-list doc-list--unordered">
-              <li>撤回</li>
-              <li>移动模式</li>
-              <li>回退</li>
-            </ul>
-            <figure class="doc-image">
-              <img src="./doc-phone-image/UI-bottom-toolbar.png" alt="下方工具栏" />
-              <figcaption class="doc-image__caption">图：下方工具栏</figcaption>
+              <img src="./doc-phone-image/UI-manaul.png" alt="菜单栏" />
+              <figcaption class="doc-image__caption">图：菜单栏</figcaption>
             </figure>
           </details>
 
@@ -265,15 +265,6 @@
           <figure class="doc-image">
             <img src="./doc-phone-image/UI-tool-tips.gif" alt="工具提示示意" />
             <figcaption class="doc-image__caption">图：工具提示</figcaption>
-          </figure>
-
-          <h3 class="doc-section__subtitle">信息栏</h3>
-          <p class="doc-paragraph">
-            底部信息栏实时显示画布基础信息，从左到右依次为：画布大小、使用色卡、底图状态、画布创建时间、当前选中颜色。
-          </p>
-          <figure class="doc-image">
-            <img src="./doc-phone-image/UI-bottom.png" alt="底部信息栏" />
-            <figcaption class="doc-image__caption">图：底部信息栏</figcaption>
           </figure>
         </section>
 
@@ -295,7 +286,7 @@
             <li>
               <p class="doc-paragraph"><strong>使用工具绘图</strong></p>
               <figure class="doc-image">
-                <img src="./doc-phone-image/BASEUSE-draw.png" alt="使用工具绘图" />
+                <img src="./doc-tablet-image/BASEUSE-draw.png" alt="使用工具绘图" />
                 <figcaption class="doc-image__caption">图 2：绘制图案</figcaption>
               </figure>
             </li>
@@ -306,7 +297,7 @@
                 <figcaption class="doc-image__caption">图 3-1：导出设置</figcaption>
               </figure>
               <figure class="doc-image">
-                <img src="./doc-phone-image/BASEUSE-import-image.png" alt="导出成品" />
+                <img src="./doc-image/BASEUSE-import-image.png" alt="导出成品" />
                 <figcaption class="doc-image__caption">图 3-2：导出成品</figcaption>
               </figure>
             </li>
@@ -552,7 +543,7 @@
             </article>
             <article class="doc-card">
               <p class="doc-card__title">导入后 16×16（N=10）</p>
-              <img src="./doc-phone-image/BASEUSE-draw.png" alt="导入后" />
+              <img src="./doc-tablet-image/BASEUSE-draw.png" alt="导入后" />
             </article>
           </div>
           <div class="doc-quote">建议：N 取整数倍，确保像素边缘对齐。</div>
@@ -648,9 +639,17 @@
 
         <hr />
 
+        <!-- 画布信息 -->
+        <section class="doc-section" id="chapter-canvas-data">
+          <span class="doc-section__eyebrow">Page 3</span>
+          <h2 class="doc-section__title">画布信息</h2>
+        </section>
+
+        <hr />
+
         <!-- 底图的设置与编辑 -->
         <section class="doc-section" id="chapter-bg">
-          <span class="doc-section__eyebrow">Page 3</span>
+          <span class="doc-section__eyebrow">Page 4</span>
           <h2 class="doc-section__title">底图的设置与编辑</h2>
 
           <h3 class="doc-section__subtitle">基础设置</h3>
@@ -680,7 +679,7 @@
 
         <!-- 参考图窗口 -->
         <section class="doc-section" id="chapter-float-ref">
-          <span class="doc-section__eyebrow">Page 4</span>
+          <span class="doc-section__eyebrow">Page 5</span>
           <h2 class="doc-section__title">参考图窗口</h2>
           <figure class="doc-image">
             <img src="./doc-phone-image/TOOL-floatrefer.png" alt="参考图窗口" />
@@ -730,7 +729,7 @@
 
         <!-- 导出草图 -->
         <section class="doc-section" id="chapter-export">
-          <span class="doc-section__eyebrow">Page 5</span>
+          <span class="doc-section__eyebrow">Page 6</span>
           <h2 class="doc-section__title">导出草图</h2>
           <p class="doc-paragraph">
             导出窗口可自定义色号、坐标系、背景等内容，并支持高亮指定颜色单独输出。
@@ -833,7 +832,7 @@
 
         <!-- 导入 PD 工程文件 -->
         <section class="doc-section" id="chapter-import-pd">
-          <span class="doc-section__eyebrow">Page 6</span>
+          <span class="doc-section__eyebrow">Page 7</span>
           <h2 class="doc-section__title">导入 PD 工程文件</h2>
           <p class="doc-paragraph">
             <code>.pd</code> 工程文件为本站自定义格式，可在任意浏览器内恢复完整草图，支持跨网页传输。
@@ -893,7 +892,7 @@
 
         <!-- 本地存储 -->
         <section class="doc-section" id="chapter-localsave">
-          <span class="doc-section__eyebrow">Page 7</span>
+          <span class="doc-section__eyebrow">Page 8</span>
           <h2 class="doc-section__title">本地存储</h2>
 
           <p class="doc-paragraph">
@@ -961,7 +960,7 @@
 
         <!-- 显示设置 -->
         <section class="doc-section" id="chapter-display">
-          <span class="doc-section__eyebrow">Page 8</span>
+          <span class="doc-section__eyebrow">Page 9</span>
           <h2 class="doc-section__title">显示设置</h2>
           <p class="doc-paragraph">调整画布显示效果与辅助工具，实时生效。</p>
           <figure class="doc-image">
@@ -1030,7 +1029,7 @@
 
         <!-- 全屏与简洁模式 -->
         <section class="doc-section" id="chapter-screen">
-          <span class="doc-section__eyebrow">Page 9</span>
+          <span class="doc-section__eyebrow">Page 10</span>
           <h2 class="doc-section__title">全屏模式</h2>
 
           <div class="doc-callout">
@@ -1051,7 +1050,7 @@
 
         <!-- 调色板 -->
         <section class="doc-section" id="chapter-palette">
-          <span class="doc-section__eyebrow">Page 10</span>
+          <span class="doc-section__eyebrow">Page 11</span>
           <h2 class="doc-section__title">调色板</h2>
           <p class="doc-paragraph">调色板用于切换绘制颜色，支持常规色与特殊色快速选取。</p>
           <figure class="doc-image">
@@ -1074,7 +1073,7 @@
 
         <!-- 图像操作 -->
         <section class="doc-section" id="chapter-image-op">
-          <span class="doc-section__eyebrow">Page 11</span>
+          <span class="doc-section__eyebrow">Page 12</span>
           <h2 class="doc-section__title">图像操作</h2>
           <p class="doc-paragraph">
             提供图像翻转、旋转及对称绘制功能，可快速生成对称图案或调整画面方向。
@@ -1100,7 +1099,7 @@
 
         <!-- 色卡管理 -->
         <section class="doc-section" id="chapter-colorcard">
-          <span class="doc-section__eyebrow">Page 12</span>
+          <span class="doc-section__eyebrow">Page 13</span>
           <h2 class="doc-section__title">色卡管理</h2>
           <p class="doc-paragraph">在此窗口可切换、重置、新增或删除色卡，支持默认色卡与自定义色卡混合使用。</p>
           <figure class="doc-image">
@@ -1134,7 +1133,7 @@
 
         <!-- 颜色管理 -->
         <section class="doc-section" id="chapter-color-manage">
-          <span class="doc-section__eyebrow">Page 13</span>
+          <span class="doc-section__eyebrow">Page 14</span>
           <h2 class="doc-section__title">颜色管理</h2>
 
           <h3 class="doc-section__subtitle">颜色管理窗口</h3>

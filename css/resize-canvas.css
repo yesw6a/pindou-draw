@@ -389,6 +389,8 @@ body.tablet-mode #resizeCanvasOverlay .resize-actions .ghost-button {
   body #resizeCanvasOverlay .resize-overlay-body {
     gap: 8px;
     padding: 10px;
+    height: 100%;
+    overflow: auto;
   }
 
   body #resizeCanvasOverlay .resize-mode-toggle {
