@@ -40,7 +40,10 @@ export function initializeReferenceFeature() {
     [elements.referenceMinimizeBtn, 'click', () => setReferenceWindowMinimized(!state.referenceWindowMinimized)],
     [elements.referenceHeader, 'pointerdown', handleHeaderPointerDown],
     [elements.referenceResizer, 'pointerdown', handleResizerPointerDown],
-    [elements.referenceWindow, 'pointerdown', handleWindowPointerDown]
+    [elements.referenceWindow, 'pointerdown', handleWindowPointerDown],
+    [elements.referenceWindow, 'contextmenu', (ev) => ev.preventDefault()],
+    [elements.referenceHeader, 'contextmenu', (ev) => ev.preventDefault()],
+    [elements.referenceResizer, 'contextmenu', (ev) => ev.preventDefault()]
   ];
 
   events.forEach(([element, event, handler]) => element?.addEventListener(event, handler));

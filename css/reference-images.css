@@ -47,6 +47,14 @@
   border-bottom: 1px solid #f1f3f5;
 }
 
+#referenceHeader,
+#referenceResizer {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
 .reference-name {
   font-size: 0.875rem;
   font-weight: 600;
