@@ -65,7 +65,9 @@
       aria-controls="panel-display-settings" aria-expanded="false" data-tooltip="显示设置">
       <img src="svg/显示设置.svg" alt="">
     </button>
-    <button id="focusFullscreenBtn" class="toolbar-button" type="button" data-tooltip="全屏" aria-label="全屏">
+    <button id="focusModePanelBtn" class="toolbar-button" type="button" data-role="panel"
+      data-panel-target="focus-mode" aria-controls="panel-focus-mode" aria-expanded="false"
+      data-tooltip="全屏与简洁模式">
       <img src="svg/放大.svg" alt="">
     </button>
     <button class="toolbar-button" type="button" data-role="panel" data-panel-target="manual"
@@ -565,6 +567,16 @@
           <button id="updateManualBtn" type="button" class="ghost-button">更新说明</button>
           <a id="docsLink" class="primary-button" href="manual.html" target="_blank" rel="noopener">使用说明</a>
         </div>
+      </div>
+    </section>
+
+    <section class="tool-panel" id="panel-focus-mode" data-panel="focus-mode">
+      <header class="tool-panel__header">
+        <h2>全屏与简洁模式</h2>
+        <button class="panel-close-button" type="button" data-panel-close="focus-mode" aria-label="关闭全屏与简洁模式">×</button>
+      </header>
+      <div class="tool-panel__body">
+        <p class="panel-description">可快速切换至全屏并预览简洁模式按钮。</p>
       </div>
     </section>
 

@@ -404,7 +404,11 @@ function bindMobileMenu() {
   elements.mobileMenuFullscreenBtn?.addEventListener('click', () => {
     close();
     closeAllPanels({ refocusTool: false });
-    elements.focusFullscreenBtn?.click();
+    if (isMobileLayout()) {
+      elements.focusFullscreenAction?.();
+      return;
+    }
+    openSubtool('focus-mode');
   });
   elements.mobileMenuImageOpsBtn?.addEventListener('click', () => {
     openSubtool('image-operations');
@@ -1097,6 +1101,7 @@ function bindFocusModeControls() {
       } catch (_) { }
     }
   };
+  elements.focusFullscreenAction = toggleFullscreen;
   elements.focusFullscreenBtn?.addEventListener('click', toggleFullscreen);
   document.addEventListener('fullscreenchange', updateFullscreenButtonState);
   updateFullscreenButtonState();
@@ -1277,6 +1282,17 @@ function bindTabletControls() {
   window.addEventListener('resize', () => {
     positionToolPopouts();
   });
+  window.addEventListener('orientationchange', () => {
+    positionToolPopouts();
+  });
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+      positionToolPopouts();
+    });
+    window.visualViewport.addEventListener('scroll', () => {
+      positionToolPopouts();
+    });
+  }
   updateTabletUI();
 }
 
@@ -1288,6 +1304,10 @@ function initializeSimpleModeUI() {
   }
   updateSimpleModeButtonState();
   elements.simpleModeExitBtn?.addEventListener('click', () => setSimpleMode(false));
+  elements.focusSimpleModeBtn?.addEventListener('click', () => {
+    if (elements.focusSimpleModeBtn.disabled) return;
+    setSimpleMode(!state.simpleMode);
+  });
   elements.simplePaletteWindowBtn?.addEventListener('click', () => {
     elements.paletteWindowToggleBtn?.click();
   });
@@ -1320,7 +1340,7 @@ function updateSimpleModeButtonState() {
       elements.simpleToolbar.setAttribute('aria-hidden', 'true');
     }
   }
-  const lockedLabel = isMobileLayout() ? '移动端禁用简洁模式' : '平板端禁用简洁模式';
+  const lockedLabel = state.isTabletMode ? '平板端禁用简洁模式' : '移动端禁用简洁模式';
   if (elements.focusSimpleModeBtn) {
     elements.focusSimpleModeBtn.disabled = locked;
     elements.focusSimpleModeBtn.textContent = locked
@@ -1367,14 +1387,15 @@ function updateMoveToggleUI() {
 function updateFullscreenButtonState() {
   const isFullscreen = Boolean(document.fullscreenElement);
   if (elements.focusFullscreenBtn) {
-    const label = isFullscreen ? '退出全屏' : '全屏';
+    const label = isFullscreen ? '退出全屏' : '进入全屏';
     elements.focusFullscreenBtn.setAttribute('aria-label', label);
     elements.focusFullscreenBtn.dataset.tooltip = label;
     elements.focusFullscreenBtn.setAttribute('title', label);
     elements.focusFullscreenBtn.classList.toggle('is-active', isFullscreen);
+    elements.focusFullscreenBtn.textContent = label;
   }
   if (elements.mobileMenuFullscreenBtn) {
-    const label = isFullscreen ? '退出全屏' : '全屏';
+    const label = isFullscreen ? '退出全屏' : '进入全屏';
     elements.mobileMenuFullscreenBtn.setAttribute('aria-label', label);
     const textEl = elements.mobileMenuFullscreenBtn.querySelector('span');
     if (textEl) textEl.textContent = label;
@@ -1559,7 +1580,7 @@ function enhanceToolbarTooltips() {
     { selector: '[data-panel-target="export-tools"]', tooltip: '导出文件或本地保存' },
     { selector: '[data-panel-target="import-tools"]', tooltip: '导入文件或本地读取' },
     { selector: '[data-panel-target="display-settings"]', tooltip: '显示模式设置' },
-    { selector: '#focusFullscreenBtn', tooltip: '全屏' },
+    { selector: '#focusModePanelBtn', tooltip: '全屏与简洁模式' },
     { selector: '[data-panel-target="manual"]', tooltip: '查看使用手册与更新日志' },
     { selector: '#toolPencilBtn', tooltip: '画笔', ariaLabel: '画笔工具' },
     { selector: '#toolBucketBtn', tooltip: '油漆桶', ariaLabel: '填充工具' },
@@ -1635,4 +1656,7 @@ function enhanceFocusModePanel() {
   elements.focusSimpleModeBtn = simpleBtn;
   elements.forceTabletModeBtnPanel = forceTabletBtn;
   elements.forceDesktopModeBtnPanel = forceDesktopBtn;
+
+  forceTabletBtn.addEventListener('click', () => setTabletModeOverride('tablet'));
+  forceDesktopBtn.addEventListener('click', () => setTabletModeOverride('desktop'));
 }
