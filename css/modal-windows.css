@@ -387,6 +387,10 @@ input[type="number"]:focus {
   #photoSketchOverlay[data-photo-sketch-view="preview"] .photo-sketch-panel--preview {
     display: flex;
   }
+
+  .photo-sketch-grid > .photo-sketch-panel:last-child {
+    min-height: 0px !important; 
+  }
 }
 
 .photo-sketch-panel--preview header {
