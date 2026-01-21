@@ -803,12 +803,20 @@ function bindProjectControls() {
   const originalAccept = elements.projectFileInput?.getAttribute('accept') ?? '';
   elements.importProjectBtn?.addEventListener('click', () => {
     if (!elements.projectFileInput) return;
-    elements.projectFileInput.accept = state.isTabletMode ? '*/*' : originalAccept;
+    if (state.isTabletMode || isMobileLayout()) {
+      elements.projectFileInput.removeAttribute('accept');
+    } else {
+      elements.projectFileInput.setAttribute('accept', originalAccept);
+    }
     elements.projectFileInput.click();
   });
   elements.projectFileInput?.addEventListener('change', (ev) => {
     if (elements.projectFileInput) {
-      elements.projectFileInput.accept = originalAccept;
+      if (originalAccept) {
+        elements.projectFileInput.setAttribute('accept', originalAccept);
+      } else {
+        elements.projectFileInput.removeAttribute('accept');
+      }
     }
     handleProjectFileImport(ev);
   });
