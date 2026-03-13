@@ -83,6 +83,25 @@
   cursor: crosshair;
   touch-action: none;
   transition: cursor 0.15s ease;
+  /* 移动端优化：提高渲染清晰度 */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* 移动端画布优化 */
+@media (max-width: 767px) {
+  #drawingCanvas {
+    /* 禁止触摸默认行为 */
+    touch-action: none;
+    /* 提高渲染精度 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  .canvas-viewport {
+    /* 移动端画布容器优化 */
+    contain: layout paint;
+  }
 }
 
 #drawingCanvas.bucket-tool {
