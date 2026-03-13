@@ -28,9 +28,7 @@ compatibility_date = "2024-01-01"
     "node_modules/**",
     "*.md",
     ".gitignore",
-    "doc-image/**",
-    "doc-tablet-image/**",
-    "doc-phone-image/**"
+    "doc-tablet-image/TOOL-local-auto.gif"
   ]
 
 # 环境变量
