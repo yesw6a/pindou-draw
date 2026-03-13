@@ -238,7 +238,13 @@ export function redrawCanvas() {
   ctx.translate(originX, originY);
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.font = `${Math.max(10, Math.floor(cellSize * 0.45))}px ${AXIS_STYLE.fontFamily}`;
+  // 高清文本渲染
+  ctx.font = `${Math.max(12, Math.floor(cellSize * 0.5))}px ${AXIS_STYLE.fontFamily}`;
+  ctx.letterSpacing = '0.5px';
+  // 移动端优化：提高文本清晰度
+  if (window.devicePixelRatio > 1) {
+    ctx.font = `${Math.max(14, Math.floor(cellSize * 0.55 * window.devicePixelRatio))}px ${AXIS_STYLE.fontFamily}`;
+  }
   for (let y = 0; y < state.height; y++) {
     for (let x = 0; x < state.width; x++) {
       const cell = state.grid[y][x];

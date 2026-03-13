@@ -97,10 +97,19 @@ export function renderAxisLabels(ctx, options = {}) {
   } = options;
   if (!ctx) return;
   ctx.save();
-  ctx.font = `${fontSize}px ${AXIS_STYLE.fontFamily}`;
+  // 高清文本渲染
+  const renderFontSize = window.devicePixelRatio > 1 
+    ? Math.max(14, fontSize * window.devicePixelRatio)
+    : fontSize;
+  ctx.font = `${renderFontSize}px ${AXIS_STYLE.fontFamily}`;
   ctx.fillStyle = textColor;
   ctx.strokeStyle = tickColor;
   ctx.lineWidth = 1;
+  // 文本描边增强清晰度
+  ctx.shadowColor = 'rgba(255,255,255,0.8)';
+  ctx.shadowBlur = 2;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
 
   ctx.textAlign = 'center';
   ctx.textBaseline = 'bottom';
