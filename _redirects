@@ -1,0 +1,8 @@
+# Cloudflare Pages Redirects
+# SPA 路由支持
+
+# 将所有非文件请求重定向到 index.html (SPA 支持)
+/*    /index.html   200
+
+# HTTP 强制跳转到 HTTPS (Cloudflare 自动处理)
+# http://pindou-draw.pages.dev    https://pindou-draw.pages.dev   301

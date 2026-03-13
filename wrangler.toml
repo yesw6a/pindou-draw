@@ -1,0 +1,41 @@
+# Cloudflare Wrangler 配置
+# 用于本地开发和部署
+
+name = "pindou-draw"
+compatibility_date = "2024-01-01"
+
+# Pages 项目配置
+[site]
+  bucket = "."
+  include = [
+    "*.html",
+    "*.css",
+    "*.js",
+    "*.svg",
+    "*.png",
+    "*.jpg",
+    "*.jpeg",
+    "*.gif",
+    "*.ico",
+    "*.json",
+    "_headers",
+    "_redirects"
+  ]
+  exclude = [
+    ".git/**",
+    ".vscode/**",
+    ".github/**",
+    "node_modules/**",
+    "*.md",
+    ".gitignore"
+  ]
+
+# 环境变量
+[vars]
+  APP_NAME = "pindou-draw"
+  APP_VERSION = "2.2"
+
+# 开发服务器配置
+[dev]
+  port = 8080
+  local_protocol = "http"
