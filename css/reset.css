@@ -36,13 +36,21 @@ body {
 
 /* 移动端优化 */
 @media (max-width: 767px) {
-  body {
+  html, body {
     /* 禁止双击缩放 */
     touch-action: none;
     /* 禁止滚动穿透 */
     position: fixed;
     width: 100%;
     height: 100%;
+    /* 禁止双击缩放 */
+    overscroll-behavior: none;
+  }
+  
+  /* 禁止图片和其他元素的默认触摸行为 */
+  img, canvas, button {
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 

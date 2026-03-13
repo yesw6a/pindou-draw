@@ -96,11 +96,24 @@
     /* 提高渲染精度 */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* 高清渲染 */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
   }
   
   .canvas-viewport {
     /* 移动端画布容器优化 */
     contain: layout paint;
+    /* 高清渲染 */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+  
+  /* 优化 Canvas 文本渲染 */
+  canvas {
+    text-rendering: optimizeLegibility;
+    -webkit-text-stroke: 0.3px rgba(0,0,0,0.5);
   }
 }
 
